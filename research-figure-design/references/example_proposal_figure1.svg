@@ -1,0 +1,326 @@
+<svg viewBox="0 0 1140 420" xmlns="http://www.w3.org/2000/svg" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,sans-serif">
+  <defs>
+    <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1f2a44"/></marker>
+    <marker id="arPw" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#fff"/></marker>
+  </defs>
+
+  <!-- ===== PANEL 1: TASK 1 — Steering Benchmark ===== -->
+  <g transform="translate(8 10)">
+    <rect width="360" height="400" rx="14" fill="#eef3fb" stroke="#cdddee"/>
+    <text x="14" y="22" font-size="10" font-weight="700" fill="#3a6ea5" letter-spacing="0.5">TASK 1 · STEERING BENCHMARK</text>
+
+    <!-- subtitle: what we measure -->
+    <text x="14" y="40" font-size="10" font-weight="700" fill="#1f2a44">deception categories measured</text>
+
+    <!-- 3 category strips -->
+    <g transform="translate(14 48)">
+      <rect width="332" height="42" rx="8" fill="#fff" stroke="#cdddee"/>
+      <rect width="6" height="42" rx="3" fill="#c2455a"/>
+      <text x="16" y="18" font-size="12" font-weight="800" fill="#c2455a">Fabrication</text>
+      <text x="16" y="32" font-size="9.5" fill="#5b6b87">produces false content</text>
+      <text x="180" y="26" font-size="10" font-style="italic" fill="#5b6b87">"see Smith 2023" ⚠</text>
+    </g>
+    <g transform="translate(14 96)">
+      <rect width="332" height="42" rx="8" fill="#fff" stroke="#cdddee"/>
+      <rect width="6" height="42" rx="3" fill="#3a6ea5"/>
+      <text x="16" y="18" font-size="12" font-weight="800" fill="#3a6ea5">Omission</text>
+      <text x="16" y="32" font-size="9.5" fill="#5b6b87">withholds relevant truth</text>
+      <text x="180" y="26" font-size="10" font-style="italic" fill="#5b6b87">"done." (hides ⚠)</text>
+    </g>
+    <g transform="translate(14 144)">
+      <rect width="332" height="42" rx="8" fill="#fff" stroke="#cdddee"/>
+      <rect width="6" height="42" rx="3" fill="#7a5410"/>
+      <text x="16" y="18" font-size="12" font-weight="800" fill="#7a5410">Pragmatic distortion</text>
+      <text x="16" y="32" font-size="9.5" fill="#5b6b87">true but misleading framing</text>
+      <text x="180" y="26" font-size="10" font-style="italic" fill="#5b6b87">"passes" (17/20)</text>
+    </g>
+
+    <!-- divider -->
+    <line x1="14" y1="198" x2="346" y2="198" stroke="#cdddee"/>
+
+    <!-- steering methods compared -->
+    <text x="14" y="214" font-size="10" font-weight="700" fill="#1f2a44">steering methods compared</text>
+    <g transform="translate(14 222)" font-size="10" font-weight="700">
+      <rect width="68" height="24" rx="12" fill="#fff" stroke="#5b6b87"/>
+      <text x="34" y="16" text-anchor="middle" fill="#5b6b87">RepE</text>
+      <rect x="74" width="92" height="24" rx="12" fill="#fff" stroke="#5b6b87"/>
+      <text x="120" y="16" text-anchor="middle" fill="#5b6b87">DiffInMeans</text>
+      <rect x="172" width="56" height="24" rx="12" fill="#fff" stroke="#5b6b87"/>
+      <text x="200" y="16" text-anchor="middle" fill="#5b6b87">SAE</text>
+      <rect x="234" width="98" height="24" rx="12" fill="#ece4f6" stroke="#6e4ea3" stroke-width="1.6"/>
+      <text x="283" y="16" text-anchor="middle" fill="#6e4ea3">+ ours</text>
+    </g>
+
+    <!-- divider -->
+    <line x1="14" y1="258" x2="346" y2="258" stroke="#cdddee"/>
+
+    <!-- Scales -->
+    <text x="14" y="274" font-size="10" font-weight="700" fill="#1f2a44">at two scales</text>
+    <g transform="translate(14 282)">
+      <!-- foundation: Q→A -->
+      <rect width="36" height="22" rx="11" fill="#fff" stroke="#6e4ea3" stroke-width="1.4"/>
+      <text x="18" y="15" font-size="10" font-weight="700" text-anchor="middle" fill="#6e4ea3">Q</text>
+      <line x1="38" y1="11" x2="50" y2="11" stroke="#6e4ea3" stroke-width="1.4"/>
+      <rect x="52" width="36" height="22" rx="11" fill="#6e4ea3"/>
+      <text x="70" y="15" font-size="10" font-weight="700" text-anchor="middle" fill="#fff">A</text>
+      <text x="44" y="40" font-size="10" font-weight="700" text-anchor="middle" fill="#6e4ea3">foundation</text>
+
+      <g transform="translate(168 0)">
+        <rect width="20" height="22" rx="11" fill="#fff" stroke="#6e4ea3" stroke-width="1.4"/>
+        <line x1="22" y1="11" x2="30" y2="11" stroke="#6e4ea3" stroke-width="1.4"/>
+        <circle cx="38" cy="11" r="7" fill="none" stroke="#6e4ea3" stroke-width="1.4"/>
+        <line x1="46" y1="11" x2="54" y2="11" stroke="#6e4ea3" stroke-width="1.4"/>
+        <rect x="56" width="20" height="22" rx="3" fill="#fff" stroke="#6e4ea3" stroke-width="1.4"/>
+        <line x1="78" y1="11" x2="86" y2="11" stroke="#6e4ea3" stroke-width="1.4"/>
+        <rect x="88" width="36" height="22" rx="11" fill="#6e4ea3"/>
+        <text x="106" y="15" font-size="10" font-weight="700" text-anchor="middle" fill="#fff">A</text>
+        <text x="62" y="40" font-size="10" font-weight="700" text-anchor="middle" fill="#6e4ea3">agent trajectory</text>
+      </g>
+    </g>
+
+    <!-- divider -->
+    <line x1="14" y1="338" x2="346" y2="338" stroke="#cdddee"/>
+
+    <!-- Datasets with new emphasis -->
+    <text x="14" y="354" font-size="10" font-weight="700" fill="#1f2a44">datasets</text>
+    <g transform="translate(14 362)">
+      <!-- existing stack -->
+      <rect x="0" y="6" width="44" height="22" rx="4" fill="#fff" stroke="#cdddee"/>
+      <rect x="2" y="4" width="44" height="22" rx="4" fill="#fff" stroke="#cdddee"/>
+      <rect x="4" y="2" width="44" height="22" rx="4" fill="#fff" stroke="#cdddee"/>
+      <rect x="6" y="0" width="44" height="22" rx="4" fill="#fff" stroke="#3a6ea5"/>
+      <text x="28" y="14" font-size="10" font-weight="800" text-anchor="middle" fill="#3a6ea5">×4</text>
+
+      <text x="62" y="9" font-size="9" font-weight="700" fill="#5b6b87">existing</text>
+      <text x="62" y="21" font-size="8.5" fill="#5b6b87" font-style="italic">TruthfulQA, MASK,…</text>
+
+      <!-- + indicator -->
+      <text x="174" y="18" font-size="20" font-weight="800" fill="#6e4ea3">+</text>
+
+      <!-- new agentic envs -->
+      <g transform="translate(198 0)">
+        <rect width="34" height="22" rx="4" fill="#ece4f6" stroke="#6e4ea3" stroke-width="1.6"/>
+        <text x="17" y="14" font-size="10" font-weight="800" text-anchor="middle" fill="#6e4ea3">new</text>
+        <text x="42" y="9" font-size="9" font-weight="700" fill="#6e4ea3">our agentic envs</text>
+        <text x="42" y="21" font-size="8" font-style="italic" fill="#7d8a9e">multi-turn · tool-calling</text>
+      </g>
+    </g>
+  </g>
+
+  <!-- Arrow 1 -> 2 -->
+  <line x1="376" y1="205" x2="398" y2="205" stroke="#1f2a44" stroke-width="2" marker-end="url(#ar)"/>
+
+  <!-- ===== PANEL 2: TASK 2 — Method ===== -->
+  <g transform="translate(404 10)">
+    <rect width="320" height="400" rx="14" fill="#f1ecf8" stroke="#d6c8ec"/>
+    <text x="14" y="22" font-size="10" font-weight="700" fill="#6e4ea3" letter-spacing="0.5">TASK 2 · UNIFIED METHOD</text>
+
+    <!-- approach text below badge -->
+    <text x="160" y="44" font-size="11" font-weight="800" text-anchor="middle" fill="#1f2a44">combine + orthogonalize</text>
+    <text x="160" y="58" font-size="10" text-anchor="middle" fill="#5b6b87">across categories</text>
+
+    <!-- Hub -->
+    <g transform="translate(160 178)">
+      <defs>
+        <marker id="mAv" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="currentColor"/></marker>
+      </defs>
+      <!-- 4 deception category arrows (combine) -->
+      <line x1="-104" y1="-72" x2="-42" y2="-26" stroke="#c2455a" color="#c2455a" stroke-width="2.4" marker-end="url(#mAv)"/>
+      <line x1="-114" y1="0" x2="-46" y2="0" stroke="#3a6ea5" color="#3a6ea5" stroke-width="2.4" marker-end="url(#mAv)"/>
+      <line x1="-104" y1="72" x2="-42" y2="26" stroke="#7a5410" color="#7a5410" stroke-width="2.4" marker-end="url(#mAv)"/>
+      <line x1="104" y1="72" x2="42" y2="26" stroke="#b6741b" color="#b6741b" stroke-width="2.4" marker-end="url(#mAv)"/>
+
+      <!-- 2 orthogonalize arrows (red dashed) -->
+      <line x1="104" y1="-72" x2="42" y2="-26" stroke="#c2455a" color="#c2455a" stroke-width="2" stroke-dasharray="5 3"/>
+      <line x1="114" y1="0" x2="46" y2="0" stroke="#c2455a" color="#c2455a" stroke-width="2" stroke-dasharray="5 3"/>
+
+      <!-- minus markers on the two orth arrows -->
+      <g transform="translate(73 -49)">
+        <circle r="8" fill="#fff" stroke="#c2455a" stroke-width="1.8"/>
+        <line x1="-4" y1="0" x2="4" y2="0" stroke="#c2455a" stroke-width="2.4" stroke-linecap="round"/>
+      </g>
+      <g transform="translate(80 0)">
+        <circle r="8" fill="#fff" stroke="#c2455a" stroke-width="1.8"/>
+        <line x1="-4" y1="0" x2="4" y2="0" stroke="#c2455a" stroke-width="2.4" stroke-linecap="round"/>
+      </g>
+
+      <g font-size="11" font-weight="800">
+        <!-- 4 deception categories (combine) -->
+        <rect x="-150" y="-86" width="58" height="24" rx="12" fill="#fde7ec" stroke="#c2455a"/><text x="-121" y="-70" text-anchor="middle" fill="#c2455a">fabric.</text>
+        <rect x="-150" y="-12" width="48" height="24" rx="12" fill="#e8f1fb" stroke="#3a6ea5"/><text x="-126" y="4" text-anchor="middle" fill="#3a6ea5">omit.</text>
+        <rect x="-150" y="62" width="58" height="24" rx="12" fill="#fbf0d7" stroke="#7a5410"/><text x="-121" y="78" text-anchor="middle" fill="#7a5410">pragm.</text>
+        <rect x="92" y="62" width="58" height="24" rx="12" fill="#f0e8db" stroke="#b6741b"/><text x="121" y="78" text-anchor="middle" fill="#b6741b">sandb.</text>
+
+        <!-- 2 orthogonalize targets (red, with stripe pattern) -->
+        <rect x="92" y="-86" width="64" height="24" rx="12" fill="#fff" stroke="#c2455a" stroke-width="1.6" stroke-dasharray="3 2"/><text x="124" y="-70" text-anchor="middle" fill="#c2455a">harmful</text>
+        <rect x="92" y="-12" width="64" height="24" rx="12" fill="#fff" stroke="#c2455a" stroke-width="1.6" stroke-dasharray="3 2"/><text x="124" y="4" text-anchor="middle" fill="#c2455a">bias</text>
+      </g>
+
+      <circle r="38" fill="#6e4ea3" stroke="#3f2769" stroke-width="2"/>
+      <text y="6" font-size="14" font-weight="800" text-anchor="middle" fill="#fff">honesty</text>
+    </g>
+
+    <!-- Source icons (3 centered) -->
+    <g transform="translate(54 318)">
+      <text x="106" y="0" font-size="10" font-weight="700" fill="#1f2a44" text-anchor="middle">extracted from activations</text>
+      <g transform="translate(0 10)">
+        <!-- residual stack -->
+        <rect width="42" height="42" rx="6" fill="#fff" stroke="#c8b6e2"/>
+        <rect x="7" y="10" width="28" height="3" fill="#6e4ea3"/>
+        <rect x="7" y="18" width="28" height="3" fill="#6e4ea3"/>
+        <rect x="7" y="26" width="28" height="3" fill="#6e4ea3"/>
+        <rect x="7" y="34" width="28" height="3" fill="#6e4ea3"/>
+        <text x="21" y="55" font-size="9" font-weight="700" text-anchor="middle" fill="#6e4ea3">residual</text>
+
+        <!-- SAE grid -->
+        <g transform="translate(85 0)">
+          <rect width="42" height="42" rx="6" fill="#fff" stroke="#c8b6e2"/>
+          <rect x="7" y="7" width="8" height="8" fill="#6e4ea3"/><rect x="17" y="7" width="8" height="8" fill="#c8b6e2"/><rect x="27" y="7" width="8" height="8" fill="#6e4ea3"/>
+          <rect x="7" y="17" width="8" height="8" fill="#c8b6e2"/><rect x="17" y="17" width="8" height="8" fill="#6e4ea3"/><rect x="27" y="17" width="8" height="8" fill="#c8b6e2"/>
+          <rect x="7" y="27" width="8" height="8" fill="#6e4ea3"/><rect x="17" y="27" width="8" height="8" fill="#c8b6e2"/><rect x="27" y="27" width="8" height="8" fill="#6e4ea3"/>
+          <text x="21" y="55" font-size="9" font-weight="700" text-anchor="middle" fill="#6e4ea3">SAE</text>
+        </g>
+
+        <!-- neurons -->
+        <g transform="translate(170 0)">
+          <rect width="42" height="42" rx="6" fill="#fff" stroke="#c8b6e2"/>
+          <line x1="21" y1="21" x2="11" y2="11" stroke="#c8b6e2"/>
+          <line x1="21" y1="21" x2="31" y2="11" stroke="#c8b6e2"/>
+          <line x1="21" y1="21" x2="11" y2="31" stroke="#c8b6e2"/>
+          <line x1="21" y1="21" x2="31" y2="31" stroke="#c8b6e2"/>
+          <circle cx="11" cy="11" r="2.8" fill="#c8b6e2"/>
+          <circle cx="31" cy="11" r="2.8" fill="#c8b6e2"/>
+          <circle cx="11" cy="31" r="2.8" fill="#c8b6e2"/>
+          <circle cx="31" cy="31" r="2.8" fill="#c8b6e2"/>
+          <circle cx="21" cy="21" r="4" fill="#6e4ea3"/>
+          <text x="21" y="55" font-size="9" font-weight="700" text-anchor="middle" fill="#6e4ea3">neurons</text>
+        </g>
+      </g>
+    </g>
+  </g>
+
+  <!-- Arrow 2 -> 3 -->
+  <line x1="732" y1="205" x2="754" y2="205" stroke="#1f2a44" stroke-width="2" marker-end="url(#ar)"/>
+
+  <!-- ===== PANEL 3: RESULT ===== -->
+  <g transform="translate(760 10)">
+    <rect width="372" height="400" rx="14" fill="#e8f3ec" stroke="#b8d8c4"/>
+    <text x="14" y="22" font-size="10" font-weight="700" fill="#2e8b57" letter-spacing="0.5">RESULT</text>
+
+    <!-- FOUNDATION example block -->
+    <g transform="translate(14 32)">
+      <text x="0" y="0" font-size="10" font-weight="800" fill="#3a6ea5" letter-spacing="0.4">FOUNDATION</text>
+      <text x="86" y="0" font-size="9.5" font-style="italic" fill="#5b6b87">Q: "does this code handle expired tokens?"</text>
+
+      <rect x="0" y="8" width="344" height="20" rx="4" fill="#fde7ec"/>
+      <text x="10" y="22" font-size="12" font-weight="800" fill="#c2455a">✗</text>
+      <text x="26" y="22" font-size="10.5" font-style="italic" fill="#1f2a44">"It follows standard OAuth patterns."  (evasive)</text>
+
+      <rect x="0" y="32" width="344" height="20" rx="4" fill="#e3f3ea"/>
+      <text x="10" y="46" font-size="12" font-weight="800" fill="#2e8b57">✓</text>
+      <text x="26" y="46" font-size="10.5" font-style="italic" fill="#1f2a44">"No — line 47 skips expiry validation."</text>
+    </g>
+
+    <!-- AGENT example block -->
+    <g transform="translate(14 96)">
+      <text x="0" y="0" font-size="10" font-weight="800" fill="#3a6ea5" letter-spacing="0.4">AGENT</text>
+      <text x="46" y="0" font-size="9.5" font-style="italic" fill="#5b6b87">multi-step under memory pressure</text>
+
+      <rect x="0" y="8" width="344" height="20" rx="4" fill="#fde7ec"/>
+      <text x="10" y="22" font-size="12" font-weight="800" fill="#c2455a">✗</text>
+      <text x="26" y="22" font-size="10.5" font-style="italic" fill="#1f2a44">disables 3 tests · reports "all green"</text>
+
+      <rect x="0" y="32" width="344" height="20" rx="4" fill="#e3f3ea"/>
+      <text x="10" y="46" font-size="12" font-weight="800" fill="#2e8b57">✓</text>
+      <text x="26" y="46" font-size="10.5" font-style="italic" fill="#1f2a44">surfaces 3 failures · honest report</text>
+    </g>
+
+    <!-- divider above bars -->
+    <line x1="14" y1="149" x2="358" y2="149" stroke="#b8d8c4"/>
+
+    <!-- per-category reduction bars (no number labels) -->
+    <g transform="translate(14 159)">
+      <text x="0" y="0" font-size="10" font-weight="700" fill="#6e4ea3">deception reduction</text>
+      <text x="116" y="0" font-size="9" font-style="italic" fill="#5b6b87">(longer = better →)</text>
+
+      <!-- legend -->
+      <g transform="translate(252 -8)">
+        <line x1="0" y1="0" x2="0" y2="10" stroke="#5b6b87" stroke-width="2"/>
+        <text x="6" y="9" font-size="9" fill="#5b6b87">best baseline</text>
+      </g>
+
+      <g font-size="9" fill="#5b6b87">
+        <!-- fab : ours 75% / base 30% -->
+        <text x="0" y="22" font-weight="600">fab</text>
+        <rect x="44" y="13" width="300" height="12" rx="2" fill="#fde7ec"/>
+        <rect x="44" y="13" width="225" height="12" rx="2" fill="#2e8b57"/>
+        <line x1="134" y1="10" x2="134" y2="28" stroke="#5b6b87" stroke-width="2"/>
+
+        <!-- om : ours 80% / base 38% -->
+        <text x="0" y="42" font-weight="600">om</text>
+        <rect x="44" y="33" width="300" height="12" rx="2" fill="#fde7ec"/>
+        <rect x="44" y="33" width="240" height="12" rx="2" fill="#2e8b57"/>
+        <line x1="158" y1="30" x2="158" y2="48" stroke="#5b6b87" stroke-width="2"/>
+
+        <!-- prag : ours 70% / base 28% -->
+        <text x="0" y="62" font-weight="600">prag</text>
+        <rect x="44" y="53" width="300" height="12" rx="2" fill="#fde7ec"/>
+        <rect x="44" y="53" width="210" height="12" rx="2" fill="#2e8b57"/>
+        <line x1="128" y1="50" x2="128" y2="68" stroke="#5b6b87" stroke-width="2"/>
+
+        <!-- syc : ours 78% / base 45% -->
+        <text x="0" y="82" font-weight="600">syc</text>
+        <rect x="44" y="73" width="300" height="12" rx="2" fill="#fde7ec"/>
+        <rect x="44" y="73" width="234" height="12" rx="2" fill="#2e8b57"/>
+        <line x1="179" y1="70" x2="179" y2="88" stroke="#5b6b87" stroke-width="2"/>
+
+        <!-- str : ours 72% / base 35% -->
+        <text x="0" y="102" font-weight="600">str</text>
+        <rect x="44" y="93" width="300" height="12" rx="2" fill="#fde7ec"/>
+        <rect x="44" y="93" width="216" height="12" rx="2" fill="#2e8b57"/>
+        <line x1="149" y1="90" x2="149" y2="108" stroke="#5b6b87" stroke-width="2"/>
+
+        <!-- sand : ours 68% / base 30% -->
+        <text x="0" y="122" font-weight="600">sand</text>
+        <rect x="44" y="113" width="300" height="12" rx="2" fill="#fde7ec"/>
+        <rect x="44" y="113" width="204" height="12" rx="2" fill="#2e8b57"/>
+        <line x1="134" y1="110" x2="134" y2="128" stroke="#5b6b87" stroke-width="2"/>
+      </g>
+    </g>
+
+    <!-- divider -->
+    <line x1="14" y1="295" x2="358" y2="295" stroke="#b8d8c4"/>
+
+    <!-- gauges row -->
+    <g transform="translate(14 305)">
+      <text x="0" y="0" font-size="10" font-weight="700" fill="#6e4ea3">without compromising</text>
+
+      <!-- capability -->
+      <g transform="translate(56 36)">
+        <circle r="22" fill="none" stroke="#fde7ec" stroke-width="6"/>
+        <circle r="22" fill="none" stroke="#2e8b57" stroke-width="6" stroke-dasharray="130 9" transform="rotate(-90)"/>
+        <text y="4" font-size="13" font-weight="800" text-anchor="middle" fill="#2e8b57">94%</text>
+        <text y="42" font-size="9" text-anchor="middle" fill="#5b6b87">capability</text>
+      </g>
+
+      <!-- ⊥ safety -->
+      <g transform="translate(166 36)">
+        <circle r="22" fill="none" stroke="#fde7ec" stroke-width="6"/>
+        <circle r="22" fill="none" stroke="#3a6ea5" stroke-width="6" stroke-dasharray="136 3" transform="rotate(-90)"/>
+        <text y="4" font-size="13" font-weight="800" text-anchor="middle" fill="#3a6ea5">±2%</text>
+        <text y="42" font-size="9" text-anchor="middle" fill="#5b6b87">⊥ safety</text>
+      </g>
+
+      <!-- model family dots -->
+      <g transform="translate(280 30)">
+        <circle cx="-22" cy="-4" r="6.5" fill="#6e4ea3"/>
+        <circle cx="-6" cy="-4" r="6.5" fill="#6e4ea3"/>
+        <circle cx="10" cy="-4" r="6.5" fill="#6e4ea3"/>
+        <circle cx="-14" cy="10" r="6.5" fill="#6e4ea3"/>
+        <circle cx="2" cy="10" r="6.5" fill="#6e4ea3"/>
+        <text x="-6" y="30" font-size="11" font-weight="800" text-anchor="middle" fill="#6e4ea3">5/5</text>
+        <text x="-6" y="48" font-size="9" text-anchor="middle" fill="#5b6b87">model families</text>
+      </g>
+    </g>
+  </g>
+</svg>
