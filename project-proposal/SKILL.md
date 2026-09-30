@@ -124,6 +124,7 @@ Research never edits `proposal.html`. When the user wants background (related wo
    - Discuss: raise it in chat.
    - Rejected: log it in the decision log with the reason if one was given.
    - Mark each handled item `data-applied="YYYY-MM-DD"` (the editor labels it "Applied"), so nothing is applied twice.
+   - Carry over every concrete sub-point and caveat of an item, not just its headline (e.g. "turn subagents off", "pin the judge too", "no licence: ask the authors"). After writing, re-read each item's Change and Caveat lines against the proposal; in this project's first two batches the reviewer found details dropped each time.
    - Sweep the whole proposal for anything the batch made inconsistent (summary, figures, tables, earlier sections, decision log) and fix it in the same pass.
    - Log the batch in the decision log, commit and push, then run the `proposal-reviewer` agent to check the result, and tell the user what went in and what the reviewer flagged.
    Cite the note (`<a href="research/slug.html">`) where a claim comes from research, and mark adopted notes' badge Adopted.
