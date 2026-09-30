@@ -25,7 +25,9 @@ from pathlib import Path
 from urllib.parse import parse_qs, urlparse
 
 HERE = Path(__file__).resolve().parent
-MARK = re.compile(r"(<!-- DOC:START -->)(.*?)(<!-- DOC:END -->)", re.S)
+# greedy: first START to LAST END, so a file that already has nested markers heals on the next save
+MARK = re.compile(r"(<!-- DOC:START -->)(.*)(<!-- DOC:END -->)", re.S)
+STRAY = re.compile(r"\s*<!-- DOC:(START|END) -->\s*")
 
 
 def sha(p: Path) -> str:
@@ -93,7 +95,8 @@ class Handler(SimpleHTTPRequestHandler):
             text = p.read_text()
             if not MARK.search(text):
                 return self._json(422, {"error": "DOC:START/DOC:END markers missing"})
-            new = MARK.sub(lambda m: m.group(1) + data["html"] + m.group(3), text, count=1)
+            body = STRAY.sub("\n", data["html"])  # never nest markers, even from an old editor.js
+            new = MARK.sub(lambda m: m.group(1) + body + m.group(3), text, count=1)
             p.write_text(new)
             return self._json(200, {"hash": sha(p)})
 

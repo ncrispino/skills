@@ -326,6 +326,10 @@
     c.querySelectorAll("[style]").forEach((x) => { if (!x.closest("svg")) x.removeAttribute("style"); });
     c.querySelectorAll("span:not([class]):not([id]):not([data-tip])").forEach((x) => x.replaceWith(...x.childNodes));
     c.querySelectorAll(".pp-ui").forEach((x) => x.remove());
+    // the DOC:START / DOC:END save markers sit inside <main>; never send them back, or every save nests another pair
+    const tw = document.createTreeWalker(c, NodeFilter.SHOW_COMMENT); const marks = [];
+    while (tw.nextNode()) if (/DOC:(START|END)/.test(tw.currentNode.data)) marks.push(tw.currentNode);
+    marks.forEach((m) => m.remove());
     c.querySelectorAll("#doc a[title], a[title]").forEach((x) => { if (/Cmd-click|Click to open/.test(x.title)) x.removeAttribute("title"); });
     c.querySelectorAll(".hint-open").forEach((x) => { x.classList.remove("hint-open"); });
     c.querySelectorAll(".group-hidden, .fading, .has-comment").forEach((x) => { x.classList.remove("group-hidden", "fading", "has-comment"); });
