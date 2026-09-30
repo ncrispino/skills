@@ -193,6 +193,7 @@ Record preferences, not one-off content. If a later session contradicts an entry
 
 ### Learned preferences
 - Proposals are independent of existing project repos: they live in `~/GitHubProjects/proposals/<slug>/` (git, remote `ncrispino/proposals`). Code reuse from other repos is a separate decision, logged in the decision log.
+- Commit and push the proposals repo as you go: after each agreed change or finished research round, commit with a short message and push to `origin main` (exports are gitignored). The user asked for this.
 - Save the user's original brief verbatim as `source-notes.md` in the proposal folder, so nothing is lost while rewriting.
 - The user approves research findings one by one on an HTML review page before anything is adopted, not by picking in chat.
 - For safety/behavior studies, always give the agent under test an honest way out (report that it could not finish), make sure it knows the rule itself, and start with low pressure; add pressure later as its own factor.
