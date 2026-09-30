@@ -163,7 +163,7 @@ Vim is on by default (toggle in the toolbar or `:vim off`). Mode shows top-left;
 - Search: `/text`, `n N`. Ex: `:w`, `:e!` (reload from disk), `:export docx`, `:note`, `:guide`, `:3` (jump to section 3), `:set dark|light`, `:vim off`.
 - The status line at the bottom shows mode, file, save state and word count.
 - The sidebar button at the top left (or `:toc`) collapses the outline so the page centers; the choice is remembered per browser.
-- Review pages hide approved items by default ("Show approved (n)" in the toolbar brings them back; remembered per browser). An item fades out a moment after it is approved, and a group heading disappears once everything in it is approved.
+- Review pages hide approved items by default ("Show approved (n)" in the toolbar brings them back; remembered per browser). Approved items with a comment stay visible, labelled "Approved, with comment": treat that comment as a requested change when applying the item. An item fades out a moment after it is approved, and a group heading disappears once everything in it is approved.
 - The sidebar also links the whole project on every page: proposal, findings to review (with the open count), and each research note (dot color = status). It reads `research/index.html` and `research/review.html`, so keep those two files current.
 - `gc` or "+ Note" inserts a note for Claude after the current block.
 - Links: in NORMAL mode a click (or Enter with the caret on the link) opens it; in INSERT mode or with vim off, a click places the caret and Cmd/Ctrl-click opens. Pages open in NORMAL mode.
@@ -205,6 +205,7 @@ Record preferences, not one-off content. If a later session contradicts an entry
 - Plain language even in the summary: no unexplained terms like "matched control", "workaround rate" or "frontier models". Say what is compared and what counts as the behavior, with a concrete example.
 
 ### Gotchas
+- Test editor changes against a scratch copy of the proposal (new_proposal.py into the scratchpad, served on another port), never the user's live files: a browser test that saves can overwrite edits the user is making at the same moment.
 - `var(--x)` inside SVG presentation attributes doesn't resolve; use CSS classes.
 - contenteditable swallows link clicks; the editor follows links itself (see Editor reference).
 - contenteditable merges leave `style=""` and bare `<span>`s; the editor strips them on save.

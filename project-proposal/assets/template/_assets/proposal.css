@@ -277,7 +277,8 @@ svg .hyp { font: 600 11px var(--sans); fill: var(--amber); letter-spacing: .02em
 #doc .research-list .a { margin: 0; }
 
 /* review pages: approved items hidden by default ("Show approved" in the toolbar) */
-body.hide-approved .approve-item[data-status="approved"] { display: none; }
+body.hide-approved .approve-item[data-status="approved"]:not(.has-comment) { display: none; }
+.approve-item[data-status="approved"].has-comment h3::after { content: "Approved, with comment"; }
 #doc h2.group-hidden, #doc h2.group-hidden + p { display: none; }
 .approve-item.fading { opacity: .35; transition: opacity .6s; }
 @media (prefers-reduced-motion: reduce) { .approve-item.fading { transition: none; } }

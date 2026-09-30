@@ -251,7 +251,8 @@
       ui.addEventListener("click", (e) => {
         const v = e.target.dataset && e.target.dataset.v; if (!v) return;
         it.dataset.status = v; markDirty(); tallyApprovals();
-        if (v === "approved" && hideApproved) { it.classList.add("fading"); setTimeout(() => { it.classList.remove("fading"); applyHideApproved(); }, 700); } else applyHideApproved();
+        const commented = !!(it.querySelector(".comment") || {}).textContent?.trim();
+        if (v === "approved" && hideApproved && !commented) { it.classList.add("fading"); setTimeout(() => { it.classList.remove("fading"); applyHideApproved(); }, 700); } else applyHideApproved();
       });
     });
     tallyApprovals();
@@ -267,6 +268,11 @@
       q("#pp-hints").before(b);
       b.onclick = () => { hideApproved = !hideApproved; LS("pp-hide-approved", hideApproved ? "on" : "off"); applyHideApproved(); };
     }
+    // an approved item with a comment stays visible: the comment usually asks for a change
+    doc.querySelectorAll(".approve-item").forEach((x) => {
+      const c = x.querySelector(".comment");
+      x.classList.toggle("has-comment", !!(c && c.textContent.trim()));
+    });
     document.body.classList.toggle("hide-approved", hideApproved);
     const n = doc.querySelectorAll('.approve-item[data-status="approved"]').length;
     q("#pp-hide-approved").textContent = hideApproved ? `Show approved (${n})` : "Hide approved";
@@ -274,7 +280,7 @@
     doc.querySelectorAll("h2").forEach((h) => {
       let any = false, items = 0;
       for (let x = h.nextElementSibling; x && x.tagName !== "H2"; x = x.nextElementSibling) {
-        if (x.classList.contains("approve-item")) { items++; if (!(hideApproved && x.dataset.status === "approved")) any = true; }
+        if (x.classList.contains("approve-item")) { items++; if (!(hideApproved && x.dataset.status === "approved" && !x.classList.contains("has-comment"))) any = true; }
       }
       h.classList.toggle("group-hidden", items > 0 && !any);
     });
@@ -322,7 +328,7 @@
     c.querySelectorAll(".pp-ui").forEach((x) => x.remove());
     c.querySelectorAll("#doc a[title], a[title]").forEach((x) => { if (/Cmd-click|Click to open/.test(x.title)) x.removeAttribute("title"); });
     c.querySelectorAll(".hint-open").forEach((x) => { x.classList.remove("hint-open"); });
-    c.querySelectorAll(".group-hidden, .fading").forEach((x) => { x.classList.remove("group-hidden", "fading"); });
+    c.querySelectorAll(".group-hidden, .fading, .has-comment").forEach((x) => { x.classList.remove("group-hidden", "fading", "has-comment"); });
     c.querySelectorAll("[class=\"\"]").forEach((x) => x.removeAttribute("class"));
     c.querySelectorAll("[data-approve-summary]").forEach((x) => x.removeAttribute("contenteditable"));
     return "\n" + c.innerHTML.trim() + "\n";
