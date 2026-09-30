@@ -73,7 +73,7 @@ Get these in conversation. Use AskUserQuestion for real forks; don't interview f
 
 ```bash
 python3 <skill>/scripts/new_proposal.py <dir> --title "…" --author "…"
-python3 <skill>/scripts/serve.py <dir>          # run_in_background
+nohup python3 <skill>/scripts/serve.py <dir> > /tmp/proposal-server.log 2>&1 &   # detached; see Gotchas
 ```
 
 Give the user the URL that `serve.py` prints. Read it from the output, because the script moves to the next free port when 8765 is taken. Delete the threat-model section if not needed.
@@ -218,6 +218,6 @@ Record preferences, not one-off content. If a later session contradicts an entry
 - contenteditable merges leave `style=""` and bare `<span>`s; the editor strips them on save.
 - Chrome's `execCommand("delete")` across block boundaries damages neighbours (a following `<h2>` becomes a `<p>`, hidden `.hint` blocks get swallowed). Vim line ops therefore edit the DOM directly and use the editor's own snapshot undo.
 - Don't lay out label/value rows with CSS grid: it turns every inline tag (`<i>`, `<a>`) into its own column. Review items use a hanging label; the summary puts each label on its own line.
-- A background `serve.py` started from Claude Code is killed at its timeout (30 min by default). Start it with the maximum timeout, and offer the user the command to run in their own terminal for long sessions.
+- A `serve.py` started as a Claude Code background task is killed at its time limit (2 hours at most). Start it detached instead, so it lasts the whole session: `nohup python3 <skill>/scripts/serve.py <dir> --port 8766 > /tmp/proposal-server.log 2>&1 &`, then check the log for the URL. Stop it with `pkill -f "serve.py .*<dir-name>"`.
 - `serve.py` falls back to the next free port; another app held 8765 on this machine, so always report the printed URL.
 - Figures are drawn 800 wide and bleed 48px into each page margin; keep SVG text at 12.5px+ so labels stay readable.
