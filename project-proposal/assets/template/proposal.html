@@ -1,0 +1,235 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{TITLE}}</title>
+<link rel="stylesheet" href="_assets/proposal.css">
+</head>
+<body data-research="research/index.html">
+<div class="pp-wrap">
+<nav id="pp-toc"></nav>
+<main id="doc">
+<!-- DOC:START -->
+<!--
+  Template rule: everything with class="hint" is guidance or example scaffolding.
+  It is hidden in the doc (shown via "Guide"), and dropped from exports.
+  When writing a section, move what you need out of its hint block and delete the rest.
+-->
+<h1>{{TITLE}}</h1>
+<p class="meta">{{AUTHOR}}. Draft started {{DATE}}.</p>
+
+<div class="tldr hint">
+<p><b>The problem</b> <span>Two to four plain sentences. What is broken or missing, and for whom, with a concrete example.</span></p>
+<p><b>Hypothesis</b> <span>What we expect to be true, stated so an experiment can show it wrong.</span></p>
+<p><b>First experiment</b> <span>The simplest setup that tests the hypothesis in week 1 or 2.</span></p>
+<p><b>We succeed if</b> <span>The result that confirms it: what is measured, compared with what, by how much.</span></p>
+<p><b>We stop if</b> <span>The result that would make us stop or change direction.</span></p>
+</div>
+
+<figure id="fig-overview" class="hint">
+<svg viewBox="0 0 800 230" role="img" aria-label="Overview figure">
+  <defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="arrowhead" d="M0,0 L10,5 L0,10 z"/></marker></defs>
+  <rect class="b-red" x="10" y="20" width="230" height="190" rx="10"/>
+  <text class="t-h t-red" x="26" y="46">Problem</text>
+  <text class="t-s" x="26" y="68">concrete failing example</text>
+  <rect class="b-purple" x="285" y="20" width="230" height="190" rx="10"/>
+  <text class="t-h t-purple" x="301" y="46">Approach</text>
+  <text class="t-s" x="301" y="68">what we change, minimal form</text>
+  <rect class="b-green" x="560" y="20" width="230" height="190" rx="10"/>
+  <text class="t-h t-green" x="576" y="46">Expected result</text>
+  <text class="t-s" x="576" y="68">metric vs strongest simple baseline</text>
+  <path class="ln" d="M242,115 L281,115" marker-end="url(#ah)"/>
+  <path class="ln" d="M517,115 L556,115" marker-end="url(#ah)"/>
+</svg>
+<figcaption><b>Figure 1.</b> The one picture of the project: problem → approach → expected result, on a running example.</figcaption>
+</figure>
+
+<h2 id="motivation">1. Motivation</h2>
+<div class="hint">
+<p>Why this matters, in one or two short paragraphs. Lead with a concrete example of the problem, not a general claim. Say who cares and what they would do with the result.</p>
+</div>
+
+<h2 id="challenges">2. Challenges</h2>
+<div class="hint">
+<p>What makes this hard. One bullet per challenge, each with why current methods do not already handle it. Each challenge should map to a design choice or an experiment below.</p>
+<ul><li><b>Challenge.</b> Why it is hard, and what it implies for the design.</li></ul>
+<div class="callout warn"><b>Could a simple baseline already solve this?</b>Name the strongest cheap baseline (prompting, a linear probe, a heuristic, a bigger model, more data, an off-the-shelf tool). If we cannot say why it falls short, testing it is the first experiment.</div>
+</div>
+
+<h2 id="threat-model">3. Threat model</h2>
+<div class="hint">
+<p>Safety and security projects only; delete this section otherwise. Be explicit about what is in and out of scope so the experiments test the right attacker.</p>
+<table>
+<tbody>
+<tr><th>Asset</th><td>What we protect (data, model behavior, user, system).</td></tr>
+<tr><th>Adversary</th><td>Who attacks: role, resources, motivation.</td></tr>
+<tr><th>Capabilities</th><td>What they can do: access (black or white box), inputs they control, number of queries, adaptivity.</td></tr>
+<tr><th>Goal</th><td>What counts as a successful attack, stated as something we can measure.</td></tr>
+<tr><th>Trust boundary</th><td>What we assume is trusted (system prompt, tool outputs, the monitor).</td></tr>
+<tr><th>Out of scope</th><td>Attacks we deliberately do not defend against, and why.</td></tr>
+</tbody>
+</table>
+<figure id="fig-threat">
+<svg viewBox="0 0 800 200" role="img" aria-label="Threat model diagram">
+  <defs><marker id="ah2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="arrowhead" d="M0,0 L10,5 L0,10 z"/></marker></defs>
+  <rect class="b-blue dash" x="300" y="15" width="480" height="170" rx="12"/>
+  <text class="t-s" x="316" y="36">trusted zone</text>
+  <rect class="b-amber" x="20" y="70" width="170" height="64" rx="8" data-tip="Adversary: who, what access, what budget"/>
+  <text class="t-h t-amber" x="36" y="97">Adversary</text>
+  <text class="t-s" x="36" y="117">controls: inputs</text>
+  <rect class="b-paper" x="340" y="70" width="170" height="64" rx="8"/>
+  <text class="t-h" x="356" y="97">System</text>
+  <text class="t-s" x="356" y="117">+ our defense</text>
+  <rect class="b-green" x="580" y="70" width="170" height="64" rx="8" data-tip="Asset we protect"/>
+  <text class="t-h t-green" x="596" y="97">Asset</text>
+  <text class="t-s" x="596" y="117">what must not leak or break</text>
+  <path class="ln-amber" d="M192,102 L336,102" marker-end="url(#ah2)"/>
+  <text class="t-s" x="210" y="92">attack surface</text>
+  <path class="ln" d="M512,102 L576,102" marker-end="url(#ah2)"/>
+</svg>
+<figcaption><b>Figure.</b> Adversary, trust boundary, asset. Hover targets carry details (data-tip).</figcaption>
+</figure>
+</div>
+
+<h2 id="approach">4. Approach</h2>
+<div class="hint">
+<p>Start simple and climb only when the previous rung is measured. Each rung says what it is, what it costs, and what result unlocks the next one. The big idea is the top rung, not the first step.</p>
+<figure id="fig-ladder">
+<svg viewBox="0 0 800 250" role="img" aria-label="Start-simple ladder">
+  <defs><marker id="ah3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="arrowhead" d="M0,0 L10,5 L0,10 z"/></marker></defs>
+  <rect class="b-slate" x="10" y="180" width="180" height="56" rx="8"/>
+  <text class="t-h" x="24" y="204">R0 trivial</text><text class="t-s" x="24" y="224">floor: random or majority</text>
+  <rect class="b-red" x="210" y="130" width="180" height="56" rx="8"/>
+  <text class="t-h t-red" x="224" y="154">R1 strong simple</text><text class="t-s" x="224" y="174">the baseline to beat</text>
+  <rect class="b-purple" x="410" y="80" width="180" height="56" rx="8"/>
+  <text class="t-h t-purple" x="424" y="104">R2 minimal idea</text><text class="t-s" x="424" y="124">smallest test of the bet</text>
+  <rect class="b-purple dash" x="610" y="30" width="180" height="56" rx="8"/>
+  <text class="t-h t-purple" x="624" y="54">R3 full idea</text><text class="t-s" x="624" y="74">only if R2 beats R1</text>
+  <path class="ln" d="M100,178 L100,160 L206,160" marker-end="url(#ah3)"/>
+  <path class="ln" d="M300,128 L300,110 L406,110" marker-end="url(#ah3)"/>
+  <path class="ln" d="M500,78 L500,60 L606,60" marker-end="url(#ah3)"/>
+  <text class="t-s" x="112" y="152">gate</text><text class="t-s" x="312" y="102">gate</text><text class="t-s" x="512" y="52">gate</text>
+</svg>
+<figcaption><b>Figure.</b> Start-simple ladder. Write each gate as a measurable condition.</figcaption>
+</figure>
+<table>
+<thead><tr><th>Rung</th><th>What</th><th>Cost</th><th>Gate to next rung</th></tr></thead>
+<tbody>
+<tr><td>R0</td><td>Trivial baseline.</td><td></td><td>The metric separates R0 from an oracle.</td></tr>
+<tr><td>R1</td><td>Strongest simple baseline.</td><td></td><td>Headroom exists: R1 is far enough from the ceiling to matter.</td></tr>
+<tr><td>R2</td><td>Minimal version of our idea.</td><td></td><td>R2 beats R1 by more than seed noise.</td></tr>
+<tr><td>R3</td><td>Full idea.</td><td></td><td></td></tr>
+</tbody>
+</table>
+</div>
+
+<h2 id="infrastructure">5. Infrastructure (step 1)</h2>
+<div class="hint">
+<p>What we build first so every later experiment is cheap, reproducible and debuggable. Reuse existing tools before writing new ones.</p>
+<figure id="fig-infra">
+<svg viewBox="0 0 800 170" role="img" aria-label="Experiment pipeline">
+  <defs><marker id="ah4" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="arrowhead" d="M0,0 L10,5 L0,10 z"/></marker></defs>
+  <rect class="b-blue" x="10" y="30" width="130" height="60" rx="8" data-tip="One config file per run; hashed; committed"/>
+  <text class="t-h t-blue" x="24" y="56">Config</text><text class="t-s" x="24" y="76">yaml + git sha</text>
+  <rect class="b-purple" x="170" y="30" width="130" height="60" rx="8" data-tip="Same entry point for every condition"/>
+  <text class="t-h t-purple" x="184" y="56">Runner</text><text class="t-s" x="184" y="76">one entry point</text>
+  <rect class="b-slate" x="330" y="30" width="130" height="60" rx="8" data-tip="Cache model calls keyed by (model, prompt, params) so reruns are free"/>
+  <text class="t-h" x="344" y="56">Cache</text><text class="t-s" x="344" y="76">calls keyed by input</text>
+  <rect class="b-blue" x="490" y="30" width="130" height="60" rx="8" data-tip="Every raw output with its provenance record; append-only"/>
+  <text class="t-h t-blue" x="504" y="56">Raw logs</text><text class="t-s" x="504" y="76">jsonl, append-only</text>
+  <rect class="b-green" x="650" y="30" width="140" height="60" rx="8" data-tip="Metrics recomputed from raw logs, never stored only as aggregates"/>
+  <text class="t-h t-green" x="664" y="56">Eval + table</text><text class="t-s" x="664" y="76">recomputable</text>
+  <path class="ln" d="M142,60 L166,60" marker-end="url(#ah4)"/><path class="ln" d="M302,60 L326,60" marker-end="url(#ah4)"/>
+  <path class="ln" d="M462,60 L486,60" marker-end="url(#ah4)"/><path class="ln" d="M622,60 L646,60" marker-end="url(#ah4)"/>
+  <rect class="b-paper dash" x="100" y="115" width="600" height="40" rx="8"/>
+  <text class="t-s" x="400" y="140" text-anchor="middle">provenance on every record: run id · config hash · git sha · model+version · seed · timestamp</text>
+</svg>
+<figcaption><b>Figure.</b> Experiment pipeline. Adapt boxes to the project; hover shows what each part guarantees.</figcaption>
+</figure>
+<table>
+<thead><tr><th>Piece</th><th>Choice</th><th>Why, or what we reuse</th></tr></thead>
+<tbody>
+<tr><td>Data and splits</td><td></td><td>Where it lives, how it is versioned; test set frozen on day 1.</td></tr>
+<tr><td>Runner</td><td></td><td>Existing harness we build on.</td></tr>
+<tr><td>Logging and provenance</td><td></td><td>What is recorded per run.</td></tr>
+<tr><td>Eval</td><td></td><td>Metric code, tested on hand-labeled examples.</td></tr>
+<tr><td>Compute</td><td></td><td>Where runs execute; keys or GPUs; concurrency.</td></tr>
+<tr><td>Viewer</td><td></td><td>How we read raw outputs, not just aggregates.</td></tr>
+</tbody>
+</table>
+</div>
+
+<h2 id="experiments">6. Experiments</h2>
+<div class="hint">
+<p>Each experiment answers one question and feeds one decision. List them in the order we run them. Then fill the budget table (totals update live); count every ablation and seed. If it goes red, cut scope here, not later.</p>
+<table>
+<thead><tr><th>ID</th><th>Question</th><th>Conditions</th><th>Metric</th><th>Decision it informs</th></tr></thead>
+<tbody>
+<tr><td>E1</td><td>Does the metric work? (R0 vs oracle)</td><td></td><td></td><td></td></tr>
+<tr><td>E2</td><td>How good is the strongest simple baseline? (R1)</td><td></td><td></td><td></td></tr>
+<tr><td>E3</td><td>Does the minimal idea beat it? (R2 vs R1)</td><td></td><td></td><td></td></tr>
+</tbody>
+</table>
+<h3>Budget and feasibility</h3>
+<table class="budget" data-budget="1000" data-unit="$">
+<thead><tr><th>Experiment</th><th class="num">Conditions</th><th class="num">Seeds</th><th class="num">Items</th><th class="num">Cost per item</th><th class="num">Total</th></tr></thead>
+<tbody>
+<tr><td>E1</td><td class="num" data-mul>2</td><td class="num" data-mul>1</td><td class="num" data-mul>200</td><td class="num" data-mul>0.01</td><td class="num" data-cost></td></tr>
+<tr><td>E2</td><td class="num" data-mul>3</td><td class="num" data-mul>3</td><td class="num" data-mul>500</td><td class="num" data-mul>0.01</td><td class="num" data-cost></td></tr>
+<tr><td>E3</td><td class="num" data-mul>4</td><td class="num" data-mul>3</td><td class="num" data-mul>500</td><td class="num" data-mul>0.02</td><td class="num" data-cost></td></tr>
+</tbody>
+<tfoot><tr class="total"><td colspan="5">Total</td><td class="num" data-sum></td></tr></tfoot>
+</table>
+<p><b>Feasibility:</b> <span data-verdict class="verdict"></span></p>
+</div>
+
+<h2 id="expected-results">7. Expected results</h2>
+<div class="hint">
+<p>What we expect to see and what would change our mind. Mock figures are labeled HYPOTHETICAL until real numbers replace them.</p>
+<figure id="fig-expected">
+<svg viewBox="0 0 800 220" role="img" aria-label="Hypothetical expected results">
+  <text class="hyp" x="690" y="20">HYPOTHETICAL</text>
+  <path class="ln" d="M80,190 L780,190"/><path class="ln" d="M80,190 L80,30"/>
+  <text class="t-s" x="20" y="35">metric</text>
+  <rect class="b-slate" x="130" y="160" width="90" height="30" data-tip="R0 trivial"/><text class="t-s" x="140" y="208">R0</text>
+  <rect class="b-red" x="290" y="95" width="90" height="95" data-tip="R1 strong simple baseline"/><text class="t-s" x="300" y="208">R1 baseline</text>
+  <rect class="b-purple" x="450" y="70" width="90" height="120" data-tip="R2 minimal idea: expected gain over R1"/><text class="t-s" x="460" y="208">R2 ours (min)</text>
+  <rect class="b-purple dash" x="610" y="45" width="90" height="145" data-tip="R3 only if R2 clears the gate"/><text class="t-s" x="620" y="208">R3 ours (full)</text>
+</svg>
+<figcaption><b>Figure.</b> Expected ordering, with the gap that would count as success.</figcaption>
+</figure>
+<div class="callout ok"><b>Supports the bet</b>The result pattern that confirms it.</div>
+<div class="callout kill"><b>Kill or pivot</b>The result pattern that ends it, and what we would do instead.</div>
+</div>
+
+<h2 id="plan">8. Plan</h2>
+<div class="hint">
+<p>Week 1 is always infrastructure plus baselines, reproducible from one command. Each row has a checkable "done when".</p>
+<table>
+<thead><tr><th>When</th><th>Deliverable</th><th>Done when</th></tr></thead>
+<tbody>
+<tr><td>Week 1</td><td>Infrastructure and R0/R1 baselines</td><td>Baseline numbers in the table, reproducible from one command.</td></tr>
+<tr><td>Week 2</td><td>R2</td><td>E3 answered.</td></tr>
+</tbody>
+</table>
+</div>
+
+<h2 id="risks">9. Risks and open questions</h2>
+<div class="hint">
+<p>Each risk with its mitigation, or the experiment that retires it. Open questions the user must decide go here, not in prose.</p>
+</div>
+
+<h2 id="research">Appendix: research notes</h2>
+<p>Background research lives in <a href="research/index.html">research/</a>. It is not verified. Claims move into the main doc only after we agree on them.</p>
+
+<h2 id="decisions">Appendix: decision log</h2>
+<ul>
+<li>{{DATE}}: proposal started.</li>
+</ul>
+<!-- DOC:END -->
+</main>
+</div>
+<script src="_assets/editor.js"></script>
+</body>
+</html>

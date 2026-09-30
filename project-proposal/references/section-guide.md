@@ -1,0 +1,76 @@
+# Section guide
+
+A checklist per section. Use it to draft and to review. A section is done when every item is answered or explicitly marked N/A.
+
+## Summary (top block, five labeled paragraphs)
+Labels are plain words, each on its own line above its text: The problem, Hypothesis, First experiment, We succeed if, We stop if. No jargon; a reader outside the subfield should follow every line.
+- **The problem**: two to four sentences with a concrete example; says who is affected.
+- **Hypothesis**: what we expect to be true, stated so an experiment can show it wrong.
+- **First experiment**: the simplest setup that tests it, runnable in week 1–2.
+- **We succeed if**: what is measured, compared with what, and by how much ("+5 points over few-shot prompting on X").
+- **We stop if**: the measurable result that ends the project or changes its direction.
+Test: someone reading only these five paragraphs could decide whether to fund week 1.
+
+## Figure 1
+- Shows problem → approach → expected result on one running example.
+- Understandable without the text and without hovering.
+- Uses the fixed color meanings (red problem/baseline, purple ours, green success).
+
+## 1. Motivation
+- Opens with a concrete example of the problem (input, what goes wrong), not a general claim.
+- Says who would use the result and what they would do differently.
+- ≤ 2 short paragraphs. Related work only if it explains why now.
+
+## 2. Challenges
+- Each challenge: why it's hard → what it implies for the design or which experiment addresses it.
+- Challenges that map to nothing below are either missing experiments or not real challenges.
+- "Could a simple baseline already solve this?" callout names the strongest cheap alternative. If we can't say why it falls short, testing it is E1/E2.
+
+## 3. Threat model (safety/security only)
+- Asset, adversary, capabilities (access, queries, adaptivity, what inputs they control), goal (measurable), trust boundary, out of scope with reasons.
+- Diagram: adversary → attack surface → system (+ defense) → asset, trusted zone drawn.
+- Adaptive attacker considered: would an attacker who knows the defense beat it? If so, is that in scope?
+- Experiments section includes attacks matching the stated capabilities (not weaker ones).
+
+## 4. Approach
+- Start-simple ladder R0–R3 with a measurable gate between each rung.
+- R1 is the strongest *simple* baseline we can find (often: better prompting, a larger model, more data, a linear probe, retrieval, an off-the-shelf tool). Not a strawman.
+- R2 is the smallest change that tests the bet. If R2 needs weeks of engineering, it is not minimal.
+- Says what we build on (existing code, models, datasets) and what is new.
+- Method described conceptually; implementation details belong in Infrastructure.
+
+## 5. Infrastructure (step 1)
+- Data: source, version, splits; test set frozen before any tuning.
+- Runner: one entry point for all conditions; config files, not code edits, to change conditions.
+- Caching of expensive calls keyed by full input (model, prompt, params) so reruns and new metrics are free.
+- Raw logs: every output saved append-only with provenance (run id, config hash, git sha, model + version/date, seed, timestamp, cost).
+- Eval: metric code tested on a few hand-labeled examples; metrics recomputed from raw logs.
+- Viewer: a way to read raw outputs side by side (we find bugs by reading examples, not aggregates).
+- Compute and cost tracking: where runs happen, rate limits, concurrency, spend per run.
+- Reuse first: name the existing harness/tool before proposing to write one.
+
+## 6. Experiments
+- Table: ID, question, conditions, metric, decision it informs. Order = run order.
+- E1 validates the metric (R0 vs oracle/ceiling). E2 measures R1. E3 is R2 vs R1.
+- Ablations listed explicitly with their count; each ablation answers a question someone would ask.
+- Seeds / repeats chosen so the expected effect exceeds run-to-run noise; say how noise is estimated.
+- Budget table covers every row above, including ablations and reruns. Verdict green/amber/red.
+- If red: cut conditions, seeds, items, or rungs, in that order of preference, and record the cut in the decision log.
+
+## 7. Expected results
+- Mock figure labeled HYPOTHETICAL showing the expected ordering and the gap that counts as success.
+- "Supports the bet" and "Kill / pivot" callouts, each a specific result pattern.
+- What we would do next under each outcome.
+
+## 8. Plan
+- Week 1 = infrastructure + R0/R1 numbers reproducible from one command.
+- Each row has a "done when" that is checkable.
+- Decision points (gates) appear as dated rows.
+
+## 9. Risks and open questions
+- Each risk → mitigation or the experiment that retires it.
+- Open questions the user must decide are listed here, not buried in prose.
+
+## Appendices
+- Research notes: link only; unverified by default.
+- Decision log: dated one-liners of what we agreed and why.

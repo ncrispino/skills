@@ -1,0 +1,283 @@
+/* Project proposal styles: a document page on a desk. Shared by proposal.html,
+   research notes and review pages. Figure colors are tokens so inline SVGs follow
+   the theme (and export in light). */
+@import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap");
+
+:root {
+  --desk: #e8ebee;
+  --paper: #ffffff;
+  --ink: #1f2328;
+  --muted: #59636e;
+  --faint: #d6dce2;
+  --wash: #f3f5f7;
+  --accent: #1f4e8c;
+  /* semantic figure palette (stroke / fill) — same meanings as research-figure-design */
+  --red: #b83a4f;    --red-bg: #fbe9ec;     /* problem, baseline, before */
+  --green: #25784b;  --green-bg: #e2f2e8;   /* our result, after, success */
+  --purple: #5f4396; --purple-bg: #ece6f5;  /* the method / contribution */
+  --blue: #2f5f94;   --blue-bg: #e6eef8;    /* data, inputs, infra */
+  --amber: #8a5d0c;  --amber-bg: #faefd6;   /* warnings, adversary, external */
+  --slate: #59636e;  --slate-bg: #eef1f4;
+  --serif: "Source Serif 4", "Iowan Old Style", Georgia, serif;
+  --sans: "IBM Plex Sans", -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
+  --font: var(--sans); /* figures */
+  --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --desk: #15171a; --paper: #1d2024; --ink: #e6e8eb; --muted: #9aa4af; --faint: #33383e; --wash: #24282d;
+    --accent: #8db4e8;
+    --red: #ec8a9a; --red-bg: #3a2127; --green: #7ccf9c; --green-bg: #1c3226;
+    --purple: #b9a3e6; --purple-bg: #2d2642; --blue: #8db4e8; --blue-bg: #1d2a3a;
+    --amber: #e2b560; --amber-bg: #3a2f18; --slate: #9aa4af; --slate-bg: #272b31;
+  }
+}
+:root[data-theme="dark"] {
+  --desk: #15171a; --paper: #1d2024; --ink: #e6e8eb; --muted: #9aa4af; --faint: #33383e; --wash: #24282d;
+  --accent: #8db4e8;
+  --red: #ec8a9a; --red-bg: #3a2127; --green: #7ccf9c; --green-bg: #1c3226;
+  --purple: #b9a3e6; --purple-bg: #2d2642; --blue: #8db4e8; --blue-bg: #1d2a3a;
+  --amber: #e2b560; --amber-bg: #3a2f18; --slate: #9aa4af; --slate-bg: #272b31;
+}
+
+* { box-sizing: border-box; }
+html { scroll-padding-top: 72px; }
+body {
+  margin: 0; background: var(--desk); color: var(--ink);
+  font: 19px/1.65 var(--serif); -webkit-font-smoothing: antialiased; font-kerning: normal;
+}
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+main#doc:focus-visible { outline: none; }
+
+/* ---------- editor chrome (sans, quiet) ---------- */
+#pp-bar {
+  position: sticky; top: 0; z-index: 20; display: flex; gap: 2px; align-items: center;
+  height: 48px; padding: 0 16px; background: var(--paper); border-bottom: 1px solid var(--faint);
+  font: 14px var(--sans);
+}
+#pp-bar #pp-toc-btn { display: flex; align-items: center; padding: 5px 7px; margin-right: 8px; }
+body.toc-hidden #pp-toc { display: none; }
+body.toc-hidden .pp-wrap { grid-template-columns: minmax(0, 1000px); }
+#pp-bar .title { font-weight: 600; margin-right: auto; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding-right: 16px; }
+#pp-bar button, #pp-bar a.btn {
+  font: 14px var(--sans); color: var(--muted); background: none; border: 0; border-radius: 6px;
+  padding: 6px 10px; cursor: pointer; text-decoration: none; white-space: nowrap;
+}
+#pp-bar button:hover, #pp-bar a.btn:hover { color: var(--ink); background: var(--wash); }
+#pp-bar button[aria-pressed="true"] { color: var(--accent); }
+.pp-menu { position: relative; }
+.pp-menu-list {
+  display: none; position: absolute; right: 0; top: 38px; min-width: 190px; padding: 6px;
+  background: var(--paper); border: 1px solid var(--faint); border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(20, 30, 40, .12);
+}
+.pp-menu.open .pp-menu-list { display: block; }
+#pp-bar .pp-menu-list button { display: block; width: 100%; text-align: left; color: var(--ink); }
+
+/* status line: the vim part of the doc */
+#pp-line {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 20; height: 28px;
+  display: flex; align-items: center; gap: 16px; padding: 0 14px 0 0;
+  background: var(--paper); border-top: 1px solid var(--faint); font: 12.5px var(--sans); color: var(--muted);
+}
+#pp-mode { align-self: stretch; display: flex; align-items: center; padding: 0 12px; font-weight: 600; color: var(--paper); background: var(--slate); }
+#pp-mode.insert { background: var(--green); }
+#pp-mode.visual { background: var(--amber); }
+#pp-mode.off { background: var(--wash); color: var(--muted); }
+#pp-file { color: var(--ink); }
+#pp-status.dirty { color: var(--amber); }
+#pp-status.error { color: var(--red); }
+#pp-line .right { margin-left: auto; }
+#pp-cmd {
+  position: fixed; bottom: 28px; left: 0; right: 0; z-index: 30; display: none;
+  padding: 6px 14px; background: var(--paper); border-top: 1px solid var(--faint); font: 14px var(--mono);
+}
+#pp-cmd input { font: inherit; color: var(--ink); background: transparent; border: 0; outline: 0; width: 90%; }
+#pp-banner {
+  display: none; position: sticky; top: 48px; z-index: 19; padding: 10px 16px;
+  background: var(--amber-bg); color: var(--ink); font: 14px var(--sans); border-bottom: 1px solid var(--amber);
+}
+#pp-banner button { font: inherit; margin-left: 8px; }
+
+/* ---------- desk + page ---------- */
+.pp-wrap { display: grid; grid-template-columns: 230px minmax(0, 1000px) 230px; gap: 32px; justify-content: center; padding: 32px 16px 120px; }
+#pp-toc { position: sticky; top: 80px; align-self: start; max-height: calc(100vh - 130px); overflow: auto; font: 14px/1.45 var(--sans); }
+#pp-toc a { display: block; color: var(--muted); text-decoration: none; padding: 4px 8px; border-radius: 5px; }
+#pp-toc a:hover { color: var(--ink); background: rgba(127, 140, 155, .12); }
+#pp-toc a.h3 { padding-left: 22px; font-size: 13px; }
+#pp-toc a.active { color: var(--ink); font-weight: 600; }
+.nav-group + .nav-group { margin-top: 22px; }
+.nav-h { font-weight: 600; color: var(--ink); padding: 4px 8px 6px; }
+#pp-toc a.current { color: var(--ink); background: rgba(127, 140, 155, .16); font-weight: 600; }
+#pp-toc a.note-link { display: flex; gap: 8px; align-items: baseline; }
+#pp-toc .dot { flex: none; width: 7px; height: 7px; border-radius: 50%; background: var(--amber); transform: translateY(-1px); }
+#pp-toc .dot.checked { background: var(--green); } #pp-toc .dot.adopted { background: var(--purple); }
+#pp-toc .count { margin-left: 6px; font-size: 12px; padding: 0 7px; border-radius: 9px; background: var(--amber-bg); color: var(--amber); }
+main#doc {
+  position: relative; background: var(--paper); padding: 72px 96px 96px; min-height: 80vh; outline: none;
+  box-shadow: 0 1px 2px rgba(20, 30, 40, .06), 0 4px 18px rgba(20, 30, 40, .06); border-radius: 2px;
+}
+main#doc[contenteditable="true"] { caret-color: var(--accent); }
+body.vim-normal main#doc { caret-color: var(--red); }
+body.vim-normal #doc a[href] { cursor: pointer; }
+@media (max-width: 1560px) { .pp-wrap { grid-template-columns: 210px minmax(0, 1000px); gap: 24px; } }
+@media (max-width: 1180px) { .pp-wrap { grid-template-columns: minmax(0, 1fr); padding: 0 0 80px; } #pp-toc { display: none; } main#doc { padding: 40px 20px 64px; box-shadow: none; } }
+
+/* ---------- document typography ---------- */
+#doc h1 { font: 600 38px/1.2 var(--sans); letter-spacing: -0.015em; margin: 0 0 10px; }
+#doc h2 { font: 600 25px/1.3 var(--sans); letter-spacing: -0.005em; margin: 52px 0 12px; }
+#doc h3 { font: 600 19.5px/1.35 var(--sans); margin: 30px 0 8px; }
+#doc p, #doc ul, #doc ol { margin: 0 0 14px; }
+#doc ul, #doc ol { padding-left: 24px; }
+#doc li { margin: 4px 0; }
+#doc a { color: var(--accent); text-decoration-thickness: 1px; text-underline-offset: 2px; }
+#doc code { font: 0.85em var(--mono); background: var(--wash); padding: 1px 5px; border-radius: 4px; }
+#doc blockquote { margin: 0 0 14px; padding-left: 16px; border-left: 3px solid var(--faint); color: var(--muted); }
+.meta { font: 15.5px var(--sans); color: var(--muted); margin: 0 0 32px; }
+
+/* summary block at the top: a plain label on its own line, then the text at full width */
+.tldr { border-top: 1px solid var(--ink); border-bottom: 1px solid var(--faint); padding: 22px 0 6px; margin: 0 0 40px; }
+.tldr p { margin: 0 0 20px !important; }
+.tldr p > b:first-child { display: block; font: 600 16px/1.4 var(--sans); color: var(--ink); margin-bottom: 3px; }
+
+/* callouts: a colored rule and a sentence-case label, no box */
+.callout { border-left: 3px solid var(--slate); padding: 2px 0 2px 16px; margin: 20px 0; }
+.callout > b:first-child { display: block; font: 600 15.5px var(--sans); margin-bottom: 2px; }
+.callout.kill { border-color: var(--red); } .callout.kill > b:first-child { color: var(--red); }
+.callout.bet  { border-color: var(--purple); } .callout.bet > b:first-child { color: var(--purple); }
+.callout.ok   { border-color: var(--green); } .callout.ok > b:first-child { color: var(--green); }
+.callout.warn { border-color: var(--amber); } .callout.warn > b:first-child { color: var(--amber); }
+
+/* template guidance and defaults: hidden until asked for (margin "Guide" or toolbar) */
+.hint { display: none !important; }
+div.hint.hint-open, p.hint.hint-open, li.hint.hint-open,
+body.show-hints div.hint, body.show-hints p.hint, body.show-hints li.hint {
+  display: block !important; font: 14.5px/1.55 var(--sans); color: var(--muted);
+  background: var(--wash); border-radius: 6px; padding: 10px 14px; margin: 8px 0 14px;
+}
+span.hint.hint-open, body.show-hints span.hint { display: inline !important; font: italic 14.5px var(--sans); color: var(--muted); }
+td.hint.hint-open, body.show-hints td.hint { display: table-cell !important; font-style: italic; color: var(--muted); }
+.hint table, .hint figure, .hint .callout { font-style: normal; opacity: .85; }
+#pp-guide {
+  position: absolute; z-index: 15; display: none; font: 12.5px var(--sans); color: var(--muted);
+  background: var(--paper); border: 1px solid var(--faint); border-radius: 6px; padding: 3px 9px; cursor: pointer;
+}
+#pp-guide:hover { color: var(--accent); border-color: var(--accent); }
+
+/* notes: comments for Claude (grep class="note") */
+#doc .note { font: 16px/1.5 var(--sans); background: var(--amber-bg); border-left: 3px solid var(--amber); padding: 8px 12px; border-radius: 0 6px 6px 0; }
+#doc .note::before { content: "Note for Claude"; display: block; font-weight: 600; font-size: 12.5px; color: var(--amber); }
+
+/* unverified claims pulled from research/: visible until the user accepts them */
+.unverified { text-decoration: underline dotted var(--amber); text-underline-offset: 3px; }
+
+/* tables: book style, horizontal rules only */
+#doc table { border-collapse: collapse; width: 100%; margin: 18px 0 22px; font: 15.5px/1.5 var(--sans); font-variant-numeric: tabular-nums; }
+#doc th, #doc td { padding: 7px 14px 7px 0; text-align: left; vertical-align: top; border-bottom: 1px solid var(--faint); }
+#doc thead th { font-weight: 600; border-bottom: 1px solid var(--ink); }
+#doc tbody th { font-weight: 600; width: 150px; }
+#doc td.num, #doc th.num { text-align: right; }
+#doc tr.total td { font-weight: 600; border-top: 1px solid var(--ink); border-bottom: 0; }
+.verdict { font: 600 15px var(--sans); }
+.verdict.go { color: var(--green); } .verdict.nogo { color: var(--red); } .verdict.tight { color: var(--amber); }
+
+/* figures: sit in the page, caption below */
+figure { margin: 32px 0; }
+#doc figure { margin-left: -48px; margin-right: -48px; } /* figures use part of the page margin */
+#doc figure figcaption { padding: 0 48px; }
+@media (max-width: 1080px) { #doc figure { margin-left: 0; margin-right: 0; } #doc figure figcaption { padding: 0; } }
+figure svg { width: 100%; height: auto; display: block; font-family: var(--sans); }
+figcaption { font: 15.5px/1.5 var(--sans); color: var(--muted); margin-top: 12px; }
+figcaption b { color: var(--ink); font-weight: 600; }
+[data-tip] { cursor: help; }
+[data-tip]:hover { opacity: .8; }
+#pp-tip {
+  position: fixed; z-index: 40; pointer-events: none; display: none; max-width: 320px;
+  background: var(--ink); color: var(--paper); font: 13px/1.4 var(--sans); padding: 7px 10px; border-radius: 6px;
+}
+
+/* research list */
+.research-list li { margin: 8px 0; }
+.badge { font: 500 12px var(--sans); padding: 1px 8px; border-radius: 10px; vertical-align: 1px; }
+.badge.unverified { background: var(--amber-bg); color: var(--amber); text-decoration: none; }
+.badge.checked { background: var(--green-bg); color: var(--green); }
+.badge.adopted { background: var(--purple-bg); color: var(--purple); }
+
+/* ---------- SVG figure vocabulary ----------
+   Use classes, not hex, so figures follow the theme. (var() does not work in
+   SVG presentation attributes, so fill="var(--x)" silently fails; use class= or style=.) */
+svg .b-red    { fill: var(--red-bg);    stroke: var(--red); }
+svg .b-green  { fill: var(--green-bg);  stroke: var(--green); }
+svg .b-purple { fill: var(--purple-bg); stroke: var(--purple); }
+svg .b-blue   { fill: var(--blue-bg);   stroke: var(--blue); }
+svg .b-amber  { fill: var(--amber-bg);  stroke: var(--amber); }
+svg .b-slate  { fill: var(--slate-bg);  stroke: var(--slate); }
+svg .b-paper  { fill: var(--paper);     stroke: var(--faint); }
+svg [class^="b-"], svg [class*=" b-"] { stroke-width: 1.5; }
+svg .dash { stroke-dasharray: 5 4; }
+svg .t      { fill: var(--ink); font-size: 13.5px; }
+svg .t-s    { fill: var(--muted); font-size: 12.5px; }
+svg .t-h    { fill: var(--ink); font-size: 15px; font-weight: 600; }
+svg .t-red { fill: var(--red); } svg .t-green { fill: var(--green); } svg .t-purple { fill: var(--purple); }
+svg .t-blue { fill: var(--blue); } svg .t-amber { fill: var(--amber); }
+svg .ln       { stroke: var(--muted); stroke-width: 1.5; fill: none; }
+svg .ln-red   { stroke: var(--red);   stroke-width: 1.8; fill: none; }
+svg .ln-green { stroke: var(--green); stroke-width: 1.8; fill: none; }
+svg .ln-amber { stroke: var(--amber); stroke-width: 1.8; fill: none; }
+svg .ln-blue  { stroke: var(--blue);  stroke-width: 1.8; fill: none; }
+svg .arrowhead { fill: var(--muted); }
+svg .dot-red { fill: var(--red); } svg .dot-green { fill: var(--green); } svg .dot-purple { fill: var(--purple); } svg .dot-slate { fill: var(--slate); }
+svg .hyp { font: 600 11px var(--sans); fill: var(--amber); letter-spacing: .02em; }
+
+/* ---------- approval items (review pages) ----------
+   One suggested change per item; status saved as data-status. A colored rule in
+   the page margin marks the decision; no boxes. */
+.approve-item { position: relative; padding: 2px 0 10px; margin: 0 0 18px; border-bottom: 1px solid var(--faint); }
+.approve-item::before { content: ""; position: absolute; left: -28px; top: 20px; bottom: 20px; width: 3px; border-radius: 2px; background: var(--faint); }
+.approve-item[data-status="approved"]::before { background: var(--green); }
+.approve-item[data-status="rejected"]::before { background: var(--red); }
+.approve-item[data-status="discuss"]::before  { background: var(--amber); }
+.approve-item[data-status="rejected"] > .kv { opacity: .55; }
+#doc .approve-item h3 { margin: 18px 0 8px; }
+.approve-item h3::after { font: 500 12px var(--sans); margin-left: 10px; padding: 1px 8px; border-radius: 10px; vertical-align: 2px; }
+.approve-item[data-status="pending"] h3::after  { content: "Pending";  background: var(--slate-bg); color: var(--muted); }
+.approve-item[data-status="approved"] h3::after { content: "Approved"; background: var(--green-bg); color: var(--green); }
+.approve-item[data-status="rejected"] h3::after { content: "Rejected"; background: var(--red-bg);   color: var(--red); }
+.approve-item[data-status="discuss"] h3::after  { content: "Discuss";  background: var(--amber-bg); color: var(--amber); }
+.approve-bar { display: inline-flex; margin: 0 0 12px; border: 1px solid var(--faint); border-radius: 7px; overflow: hidden; font: 14px var(--sans); }
+.approve-bar button { font: inherit; color: var(--muted); background: var(--paper); border: 0; border-right: 1px solid var(--faint); padding: 4px 12px; cursor: pointer; }
+.approve-bar button:last-child { border-right: 0; }
+.approve-bar button:hover { color: var(--ink); background: var(--wash); }
+.approve-item[data-status="approved"] .approve-bar [data-v="approved"] { color: var(--paper); background: var(--green); }
+.approve-item[data-status="rejected"] .approve-bar [data-v="rejected"] { color: var(--paper); background: var(--red); }
+.approve-item[data-status="discuss"]  .approve-bar [data-v="discuss"]  { color: var(--paper); background: var(--amber); }
+#doc .approve-item .kv { position: relative; padding-left: 88px; margin: 0 0 8px; }
+.approve-item .kv > b:first-child { position: absolute; left: 0; top: 0; font: 600 15px/1.95 var(--sans); color: var(--muted); }
+#doc .approve-item .comment { font: 16px/1.5 var(--sans); background: var(--wash); border-radius: 6px; padding: 7px 10px; min-height: 2.2em; margin: 10px 0 8px; }
+.approve-item .comment:empty::before { content: "Add a comment"; color: var(--muted); }
+
+/* ---------- print / PDF export ---------- */
+@media print {
+  :root { --desk: #fff; --paper: #fff; }
+  #pp-bar, #pp-line, #pp-toc, #pp-cmd, #pp-banner, #pp-tip, #pp-guide, .pp-ui, .hint, .note, .no-export { display: none !important; }
+  .pp-wrap { display: block; padding: 0; }
+  main#doc { padding: 0; box-shadow: none; }
+  body { font-size: 11pt; background: #fff; }
+  #doc h2 { break-after: avoid; }
+  figure, table, .callout { break-inside: avoid; }
+  #doc a { color: inherit; text-decoration: none; }
+  @page { margin: 20mm 18mm; }
+}
+
+/* research index: one entry per note with its question and short answer */
+#doc .research-list { list-style: none; padding: 0; }
+#doc .research-list li { margin: 0 0 22px; }
+#doc .research-list li > a { font: 600 18px var(--sans); margin-left: 6px; }
+#doc .research-list .q { font: 15px/1.5 var(--sans); color: var(--muted); margin: 4px 0 4px; }
+#doc .research-list .a { margin: 0; }
+
+/* review pages: approved items hidden by default ("Show approved" in the toolbar) */
+body.hide-approved .approve-item[data-status="approved"] { display: none; }
+#doc h2.group-hidden, #doc h2.group-hidden + p { display: none; }
+.approve-item.fading { opacity: .35; transition: opacity .6s; }
+@media (prefers-reduced-motion: reduce) { .approve-item.fading { transition: none; } }
