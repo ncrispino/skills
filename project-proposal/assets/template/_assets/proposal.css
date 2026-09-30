@@ -282,3 +282,8 @@ body.hide-approved .approve-item[data-status="approved"]:not(.has-comment) { dis
 #doc h2.group-hidden, #doc h2.group-hidden + p { display: none; }
 .approve-item.fading { opacity: .35; transition: opacity .6s; }
 @media (prefers-reduced-motion: reduce) { .approve-item.fading { transition: none; } }
+
+/* applied: Claude has moved the item into the proposal (data-applied="date") */
+.approve-item[data-status="approved"][data-applied] h3::after { content: "Applied"; background: var(--purple-bg); color: var(--purple); }
+.approve-item[data-status="approved"][data-applied].has-comment h3::after { content: "Applied, with comment"; }
+.approve-item[data-status="approved"][data-applied]::before { background: var(--purple); }
