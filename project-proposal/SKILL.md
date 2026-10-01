@@ -220,6 +220,7 @@ Record preferences, not one-off content. If a later session contradicts an entry
 ### Gotchas
 - Test editor changes against a scratch copy of the proposal (new_proposal.py into the scratchpad, served on another port), never the user's live files: a browser test that saves can overwrite edits the user is making at the same moment.
 - The DOC:START/DOC:END markers live inside `<main id="doc">`, so `doc.innerHTML` contains them. The editor strips them before saving and the server strips them from what it receives (and matches first START to last END), otherwise every save nests another pair. When editing pages with a script, slice between the first START and the last END.
+- `export.py` needs beautifulsoup4; on this machine only `/opt/homebrew/anaconda3/bin/python3` has it, and a bare `python3` fails with ModuleNotFoundError while leaving the previous export in place, so a stale file looks like a fresh one. Check the script printed `wrote ...` before trusting the output.
 - `var(--x)` inside SVG presentation attributes doesn't resolve; use CSS classes.
 - contenteditable swallows link clicks; the editor follows links itself (see Editor reference).
 - contenteditable merges leave `style=""` and bare `<span>`s; the editor strips them on save. Only spans with no attributes at all are unwrapped: an earlier rule also stripped `<span data-approve-summary>`, freezing the review tally.
