@@ -212,7 +212,7 @@ Record preferences, not one-off content. If a later session contradicts an entry
 - Commit and push the proposals repo as you go: after each agreed change or finished research round, commit with a short message and push to `origin main` (exports are gitignored). The user asked for this.
 - Save the user's original brief verbatim as `source-notes.md` in the proposal folder, so nothing is lost while rewriting.
 - The user approves research findings one by one on an HTML review page before anything is adopted, not by picking in chat.
-- For safety/behavior studies, always give the agent under test an honest way out (report that it could not finish), make sure it knows the rule itself, and start with low pressure; add pressure later as its own factor.
+- For safety/behavior studies, always give the agent under test an honest way out (report that it could not finish) and start with low pressure; add pressure later as its own factor. Give each rule only to the agent it applies to: in a multi-agent study the agent under test is not handed the guard's rule, or it declines the request itself and the guard's refusal is never tested (1 Oct 2026; replaces an earlier "make sure it knows the rule itself").
 - Start with the smallest number of agents (two), and add agents with legitimate, completable tasks later.
 - Template defaults (guidance text, example tables and numbers) must never show in the doc; they appear only when the user asks via Guide.
 - Visual quality matters: the user rejected the first, web-app-like design as ugly and hard to read. Check every page with screenshots in light and dark before showing it.
