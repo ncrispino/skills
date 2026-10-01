@@ -205,6 +205,7 @@ Record preferences, not one-off content. If a later session contradicts an entry
 
 ### Learned preferences
 - Proposals are independent of existing project repos: they live in `~/GitHubProjects/proposals/<slug>/` (git, remote `ncrispino/proposals`). Code reuse from other repos is a separate decision, logged in the decision log.
+- Before any `git add -A` in a proposal repo, confirm secrets are ignored: proposals pick up `.env` files with API keys. The repo's `.gitignore` must list `.env` and `.env.*`. Never read or echo a key; scripts load it from the environment.
 - Commit and push the proposals repo as you go: after each agreed change or finished research round, commit with a short message and push to `origin main` (exports are gitignored). The user asked for this.
 - Save the user's original brief verbatim as `source-notes.md` in the proposal folder, so nothing is lost while rewriting.
 - The user approves research findings one by one on an HTML review page before anything is adopted, not by picking in chat.
