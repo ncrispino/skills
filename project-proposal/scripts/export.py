@@ -68,6 +68,80 @@ def svg_size(svg, width=820):
     return width, round(width * 0.4)
 
 
+def fill_budget(doc):
+    """Compute the live budget cells the editor fills in the browser.
+
+    data-cost / data-sum / data-verdict are empty in the saved HTML, so without
+    this every export loses the budget numbers.
+    """
+    def num(t):
+        t = re.sub(r"[^0-9.\-eE]", "", t or "")
+        try:
+            return float(t)
+        except ValueError:
+            return 0.0
+
+    def fmt(v):
+        return f"{round(v):,}" if abs(v) >= 100 else str(round(v, 2))
+
+    for table in doc.select("table.budget"):
+        total = 0.0
+        for row in table.select("tbody tr"):
+            muls = row.select("td[data-mul]")
+            if not muls:
+                continue
+            v = 1.0
+            for c in muls:
+                v *= num(c.get_text())
+            out = row.select_one("td[data-cost]")
+            if out:
+                out.string = fmt(v)
+            total += v
+        s_cell = table.select_one("[data-sum]")
+        if s_cell:
+            s_cell.string = fmt(total)
+        budget = num(table.get("data-budget", "0"))
+        unit = table.get("data-unit", "")
+        holder = table.parent if table.parent else doc
+        v_cell = holder.select_one("[data-verdict]") or doc.select_one("[data-verdict]")
+        if v_cell is not None and budget > 0:
+            r = total / budget
+            word = ("fits with headroom" if r <= 0.7 else
+                    "fits, no slack for reruns" if r <= 1 else
+                    "over budget: cut conditions or seeds")
+            v_cell.string = f"{fmt(total)} of {fmt(budget)} {unit} ({round(r * 100)}%) — {word}"
+
+
+def flatten_tables(doc):
+    """pandoc's gfm writer emits a bare [TABLE] for tables it cannot represent,
+    which silently loses them. Move tfoot rows into tbody and expand colspan in
+    place, so a spanning label keeps its own column and the value stays last."""
+    for table in doc.find_all("table"):
+        body = table.find("tbody")
+        for foot in table.find_all("tfoot"):
+            for row in foot.find_all("tr"):
+                (body or table).append(row.extract())
+            foot.decompose()
+        for row in table.find_all("tr"):
+            for c in row.find_all(["td", "th"]):
+                span = int(c.get("colspan") or 1)
+                if c.has_attr("colspan"):
+                    del c["colspan"]
+                for _ in range(span - 1):
+                    c.insert_after(doc_soup_new_tag(c, "td"))
+                if c.has_attr("rowspan"):
+                    del c["rowspan"]
+        width = max((len(r.find_all(["td", "th"])) for r in table.find_all("tr")), default=0)
+        for row in table.find_all("tr"):
+            for _ in range(width - len(row.find_all(["td", "th"]))):
+                row.append(doc_soup_new_tag(row, "td"))
+
+
+def doc_soup_new_tag(node, name):
+    from bs4 import BeautifulSoup as _BS
+    return _BS(f"<{name}></{name}>", "html.parser").find(name)
+
+
 def clean_doc(soup, keep_notes):
     doc = soup.find("main", id="doc")
     if doc is None:
@@ -91,6 +165,7 @@ def clean_doc(soup, keep_notes):
     for el in doc.select(".tldr"):
         if not el.get_text(strip=True):
             el.decompose()
+    fill_budget(doc)
     return doc
 
 
@@ -112,6 +187,11 @@ document.addEventListener('mousemove',e=>{{t.style.left=Math.min(e.clientX+14,in
 
 def render_figures(doc, css, figdir: Path):
     """Screenshot each figure's SVG to figs/<id>.png. Returns {figure-index: png path}."""
+    # clear first: a figure deleted from the doc would otherwise linger here and
+    # get copied along as if it were current
+    if figdir.exists():
+        for f in figdir.glob("*.png"):
+            f.unlink()
     figdir.mkdir(parents=True, exist_ok=True)
     out = {}
     with tempfile.TemporaryDirectory() as tmp:
@@ -186,6 +266,7 @@ def main():
         # pandoc cannot read CSS classes as styles; callouts become block quotes so they stay visually distinct
         for c in doc.select(".callout, .tldr"):
             c.name = "blockquote"
+        flatten_tables(doc)
         img_html = outdir / f".{stem}.pandoc.html"
         img_html.write_text(f"<html><head><title>{title}</title></head><body>{doc.decode_contents()}</body></html>")
         if "docx" in fmts:
