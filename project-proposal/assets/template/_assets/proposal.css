@@ -294,3 +294,9 @@ body.hide-approved .approve-item.is-done { display: none; }
 #doc .approve-item .kv.answer { background: var(--blue-bg); border-left: 3px solid var(--blue); border-radius: 0 6px 6px 0; padding: 8px 12px 8px 100px; }
 #doc .approve-item .kv.answer > b:first-child { left: 12px; top: 8px; color: var(--blue); }
 #doc .approve-item .kv.answer table { margin: 8px 0 2px; font-size: 14px; }
+
+/* worked example: one concrete instance of the general design, visually set apart */
+#doc .example { background: var(--wash); border-left: 3px solid var(--slate); border-radius: 0 8px 8px 0; padding: 4px 24px 8px; margin: 0 0 24px; }
+#doc .example > p:first-child { color: var(--muted); font: 15px/1.5 var(--sans); }
+#doc .example figure { margin-left: 0; margin-right: 0; }
+#doc .example figure figcaption { padding: 0; }

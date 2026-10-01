@@ -131,6 +131,10 @@ Research never edits `proposal.html`. When the user wants background (related wo
 5. References the user supplies go straight into the references appendix, but check any identifiers they cite (OWASP, MITRE ATLAS, NIST, CVE IDs) against the primary source first; secondary summaries often get them wrong. MITRE ATLAS IDs are in `github.com/mitre-atlas/atlas-data` (`dist/ATLAS.yaml`).
 6. Citations the user hasn't confirmed stay `class="unverified"`. Don't invent references; the `citation-verifier` skill can check a list.
 
+### 6b. Consolidation rewrite
+
+Apply passes add patches; after a few, the document drifts (repeats, stale wording, one-off example details leaking into the general design). When the user asks for a rewrite, or after every three or four apply passes, do a consolidation rewrite following `references/rewrite-pass.md`: gather every decision and open item, rewrite each section fresh with one home per fact, move task-specific material into a marked worked-example section, run the consistency checklist, then commit and run the reviewer.
+
 ### 7. Plan review (reviewer agent)
 
 The skill ships a reviewer agent, `agents/proposal-reviewer.md` (symlinked into `~/.claude/agents/`, so it appears as the `proposal-reviewer` agent type in new sessions). It reads the proposal, source notes, research and this skill's rules, and writes `research/plan-review.html`: findings grouped as must fix / should fix / worth considering, each an approve item with Issue, Why and Change. It never edits the proposal.
