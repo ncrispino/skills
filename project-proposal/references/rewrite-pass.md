@@ -18,6 +18,8 @@ Make a short inventory (in your head or scratchpad, not in the doc): each decisi
 - **One home per fact.** Each decision is stated once, in the section it belongs to; other sections refer to it in a few words. Delete repeats.
 - **Only justified content.** Every sentence is either a decision, the reason for one, a source-backed claim, or an open question. Cut transitions, recaps, and restated motivation.
 - **General before specific.** The method sections describe the general design. A concrete task, its data and its names live in a clearly marked worked-example section (`<div class="example">`), introduced as one instance, not the rule. Experiment rows that run on the example say so.
+- **Never settle an open item while rewriting.** A rewrite reads well when every gap is filled, which makes it tempting to adopt a reviewer's proposal or invent a default. Anything the user has not decided stays a stated default with a pointer to the open item, and the decision log records that the rewrite introduced it.
+- **Carry every approved detail across.** Rewriting from scratch drops small clauses (a human check on labels, one tool in a list, a cited norm). Re-read each approved item against the new text before saving, and list anything you cut on purpose.
 - **Open questions are visible, not buried.** Where a section depends on an undecided item, state the current default in one clause and point to the open item; list all open items once in Risks and open questions.
 - Delete template hint blocks for sections that are now written.
 - Keep figures; update their text so labels match the rewritten sections.
