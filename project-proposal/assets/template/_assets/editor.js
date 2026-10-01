@@ -264,7 +264,7 @@
     const btn = q("#pp-hide-approved");
     if (!has) { if (btn) btn.remove(); return; }
     if (!btn) {
-      const b = el("button", { id: "pp-hide-approved", title: "Show or hide items you already approved" });
+      const b = el("button", { id: "pp-hide-approved", title: "Show or hide items that are done: applied by Claude, or approved with nothing left to act on" });
       q("#pp-hints").before(b);
       b.onclick = () => { hideApproved = !hideApproved; LS("pp-hide-approved", hideApproved ? "on" : "off"); applyHideApproved(); };
     }
@@ -273,14 +273,17 @@
       const c = x.querySelector(".comment");
       x.classList.toggle("has-comment", !!(c && c.textContent.trim()));
     });
+    // done = Claude applied it (any status), or approved with no comment still to act on
+    const isDone = (x) => !!x.dataset.applied || (x.dataset.status === "approved" && !x.classList.contains("has-comment"));
+    doc.querySelectorAll(".approve-item").forEach((x) => x.classList.toggle("is-done", isDone(x)));
     document.body.classList.toggle("hide-approved", hideApproved);
-    const n = doc.querySelectorAll('.approve-item[data-status="approved"]').length;
-    q("#pp-hide-approved").textContent = hideApproved ? `Show approved (${n})` : "Hide approved";
+    const n = doc.querySelectorAll(".approve-item.is-done").length;
+    q("#pp-hide-approved").textContent = hideApproved ? `Show done (${n})` : "Hide done";
     // a group heading (and its intro paragraph) disappears when nothing in it is left visible
     doc.querySelectorAll("h2").forEach((h) => {
       let any = false, items = 0;
       for (let x = h.nextElementSibling; x && x.tagName !== "H2"; x = x.nextElementSibling) {
-        if (x.classList.contains("approve-item")) { items++; if (!(hideApproved && x.dataset.status === "approved" && !x.classList.contains("has-comment"))) any = true; }
+        if (x.classList.contains("approve-item")) { items++; if (!(hideApproved && x.classList.contains("is-done"))) any = true; }
       }
       h.classList.toggle("group-hidden", items > 0 && !any);
     });
@@ -324,7 +327,8 @@
     c.querySelectorAll("figure").forEach((f) => { f.removeAttribute("contenteditable"); const cap = f.querySelector("figcaption"); if (cap) cap.removeAttribute("contenteditable"); });
     // contenteditable merges leave inline styles and bare <span>s behind; keep the source clean
     c.querySelectorAll("[style]").forEach((x) => { if (!x.closest("svg")) x.removeAttribute("style"); });
-    c.querySelectorAll("span:not([class]):not([id]):not([data-tip])").forEach((x) => x.replaceWith(...x.childNodes));
+    // only unwrap spans with no attributes at all (data-* spans like the approval tally carry meaning)
+    c.querySelectorAll("span").forEach((x) => { if (!x.attributes.length) x.replaceWith(...x.childNodes); });
     c.querySelectorAll(".pp-ui").forEach((x) => x.remove());
     // the DOC:START / DOC:END save markers sit inside <main>; never send them back, or every save nests another pair
     const tw = document.createTreeWalker(c, NodeFilter.SHOW_COMMENT); const marks = [];
@@ -332,7 +336,7 @@
     marks.forEach((m) => m.remove());
     c.querySelectorAll("#doc a[title], a[title]").forEach((x) => { if (/Cmd-click|Click to open/.test(x.title)) x.removeAttribute("title"); });
     c.querySelectorAll(".hint-open").forEach((x) => { x.classList.remove("hint-open"); });
-    c.querySelectorAll(".group-hidden, .fading, .has-comment").forEach((x) => { x.classList.remove("group-hidden", "fading", "has-comment"); });
+    c.querySelectorAll(".group-hidden, .fading, .has-comment, .is-done").forEach((x) => { x.classList.remove("group-hidden", "fading", "has-comment", "is-done"); });
     c.querySelectorAll("[class=\"\"]").forEach((x) => x.removeAttribute("class"));
     c.querySelectorAll("[data-approve-summary]").forEach((x) => x.removeAttribute("contenteditable"));
     return "\n" + c.innerHTML.trim() + "\n";

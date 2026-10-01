@@ -217,7 +217,8 @@ Record preferences, not one-off content. If a later session contradicts an entry
 - The DOC:START/DOC:END markers live inside `<main id="doc">`, so `doc.innerHTML` contains them. The editor strips them before saving and the server strips them from what it receives (and matches first START to last END), otherwise every save nests another pair. When editing pages with a script, slice between the first START and the last END.
 - `var(--x)` inside SVG presentation attributes doesn't resolve; use CSS classes.
 - contenteditable swallows link clicks; the editor follows links itself (see Editor reference).
-- contenteditable merges leave `style=""` and bare `<span>`s; the editor strips them on save.
+- contenteditable merges leave `style=""` and bare `<span>`s; the editor strips them on save. Only spans with no attributes at all are unwrapped: an earlier rule also stripped `<span data-approve-summary>`, freezing the review tally.
+- Review pages: "done" means applied by Claude (any status) or approved with no comment; done items hide. Put undecided items (discuss first, with an Answer line, then pending) in a "Still open" group at the top.
 - Chrome's `execCommand("delete")` across block boundaries damages neighbours (a following `<h2>` becomes a `<p>`, hidden `.hint` blocks get swallowed). Vim line ops therefore edit the DOM directly and use the editor's own snapshot undo.
 - Don't lay out label/value rows with CSS grid: it turns every inline tag (`<i>`, `<a>`) into its own column. Review items use a hanging label; the summary puts each label on its own line.
 - A `serve.py` started as a Claude Code background task is killed at its time limit (2 hours at most). Start it detached instead, so it lasts the whole session: `nohup python3 <skill>/scripts/serve.py <dir> --port 8766 > /tmp/proposal-server.log 2>&1 &`, then check the log for the URL. Stop it with `pkill -f "serve.py .*<dir-name>"`.

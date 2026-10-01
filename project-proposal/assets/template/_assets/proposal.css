@@ -277,7 +277,7 @@ svg .hyp { font: 600 11px var(--sans); fill: var(--amber); letter-spacing: .02em
 #doc .research-list .a { margin: 0; }
 
 /* review pages: approved items hidden by default ("Show approved" in the toolbar) */
-body.hide-approved .approve-item[data-status="approved"]:not(.has-comment) { display: none; }
+body.hide-approved .approve-item.is-done { display: none; }
 .approve-item[data-status="approved"].has-comment h3::after { content: "Approved, with comment"; }
 #doc h2.group-hidden, #doc h2.group-hidden + p { display: none; }
 .approve-item.fading { opacity: .35; transition: opacity .6s; }
@@ -287,3 +287,5 @@ body.hide-approved .approve-item[data-status="approved"]:not(.has-comment) { dis
 .approve-item[data-status="approved"][data-applied] h3::after { content: "Applied"; background: var(--purple-bg); color: var(--purple); }
 .approve-item[data-status="approved"][data-applied].has-comment h3::after { content: "Applied, with comment"; }
 .approve-item[data-status="approved"][data-applied]::before { background: var(--purple); }
+.approve-item[data-status="rejected"][data-applied] h3::after { content: "Rejected, logged"; }
+.approve-item[data-status="discuss"][data-applied] h3::after { content: "Discussed"; }
