@@ -289,3 +289,7 @@ body.hide-approved .approve-item.is-done { display: none; }
 .approve-item[data-status="approved"][data-applied]::before { background: var(--purple); }
 .approve-item[data-status="rejected"][data-applied] h3::after { content: "Rejected, logged"; }
 .approve-item[data-status="discuss"][data-applied] h3::after { content: "Discussed"; }
+
+/* Claude's answer to a question on a review item: first and highlighted */
+#doc .approve-item .kv.answer { background: var(--blue-bg); border-left: 3px solid var(--blue); border-radius: 0 6px 6px 0; padding: 8px 12px 8px 100px; }
+#doc .approve-item .kv.answer > b:first-child { left: 12px; top: 8px; color: var(--blue); }
