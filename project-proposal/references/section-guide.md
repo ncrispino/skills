@@ -45,7 +45,12 @@ Test: someone reading only these five paragraphs could decide whether to fund we
 - Caching of expensive calls keyed by full input (model, prompt, params) so reruns and new metrics are free.
 - Raw logs: every output saved append-only with provenance (run id, config hash, git sha, model + version/date, seed, timestamp, cost).
 - Eval: metric code tested on a few hand-labeled examples; metrics recomputed from raw logs.
-- Viewer: a way to read raw outputs side by side (we find bugs by reading examples, not aggregates).
+- Reading runs (results browser), built in week 1 and used from the first run. We find bugs by reading examples, not aggregates. Plan:
+  - An index of every run, filterable by condition and outcome, that includes live, failed and half-finished runs (a crashed run is often the most informative one).
+  - A per-run page with everything in one place: the raw transcript (side by side when several agents or models interact), tool calls and outputs, state changes or diffs, provenance and cost.
+  - Every number in a summary or results table links to the runs behind it, so any rate can be checked by reading its examples.
+  - One command opens it; it reads only the raw logs, so it works on old runs and never changes them.
+  - Reading a sample of runs (and every surprising one) is a step of every batch, written into the plan.
 - Compute and cost tracking: where runs happen, rate limits, concurrency, spend per run.
 - Reuse first: name the existing harness/tool before proposing to write one.
 
@@ -63,7 +68,7 @@ Test: someone reading only these five paragraphs could decide whether to fund we
 - What we would do next under each outcome.
 
 ## 8. Plan
-- Week 1 = infrastructure + R0/R1 numbers reproducible from one command.
+- Week 1 = infrastructure + R0/R1 numbers reproducible from one command, and every run from the first one can be opened and read in the results browser.
 - Each row has a "done when" that is checkable.
 - Decision points (gates) appear as dated rows.
 

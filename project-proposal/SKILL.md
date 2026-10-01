@@ -13,7 +13,8 @@ This skill is shared with the user and is meant to improve over time. Read **Lea
 
 - **Start simple (the bitter lesson).** The user has lost projects by starting with an exciting big idea and later losing to a simple baseline that week 1 should have found. Every proposal has a *start-simple ladder*: R0 trivial baseline → R1 strongest simple baseline → R2 minimal version of the idea → R3 full idea. Each rung is gated by a measured result on the rung below. Build on existing work freely; everything we add must be justified by what actually works.
 - **Feasibility is found in the experiment table.** Writing out every experiment, condition, seed and ablation, with cost, often shows a project is infeasible or too wide. The budget table is live (totals update as numbers change) so scoping happens in the doc, before any compute is spent.
-- **Infrastructure is step 1.** Good infra (one runner, cached calls, append-only raw logs with provenance, recomputable metrics, a way to look at raw outputs) makes every later experiment cheaper and debuggable. The plan's first milestone is infra + baselines.
+- **Infrastructure is step 1.** Good infra (one runner, cached calls, append-only raw logs with provenance, recomputable metrics) makes every later experiment cheaper and debuggable. The plan's first milestone is infra + baselines.
+- **Reading runs is infrastructure, from day 1.** We find bugs and behaviour by reading runs, not aggregates. Every proposal plans a results browser built in week 1 alongside the runner and used from the first run: every run listed (including live, failed and half-finished ones), each one readable in full, and every summary number linked to the runs behind it. Reading a sample of runs is part of every batch, and week 1 is not done until the first run can be opened and read.
 - **Safety projects need a threat model.** Asset, adversary, capabilities, goal, trust boundary, out of scope, plus a diagram. Experiments must test the attacker the threat model names.
 - **Figures lead, prose follows.** Each major section gets a figure if a picture explains it faster than text. Prose is plain and short.
 - **The main doc is the user's.** Research is kept separate (see below) and only enters the main doc after the user agrees.
@@ -149,6 +150,7 @@ Before calling a draft done, check with the user:
 - Does each experiment map to a decision? Cut experiments that inform nothing.
 - Is R1 genuinely the strongest cheap baseline, or a strawman?
 - Is week 1 infra + baselines, with a single command reproducing the baseline numbers?
+- Can every run be opened and read from day 1 (results browser in week 1's "done when"), and does each batch include reading a sample of runs?
 - Kill criteria stated as a measurable result.
 
 If the project doesn't fit, say so plainly and propose the smaller version.
@@ -204,6 +206,7 @@ On approval, edit this skill directly (the skill lives in `~/GitHubProjects/skil
 Record preferences, not one-off content. If a later session contradicts an entry, revise or delete it.
 
 ### Learned preferences
+- Reading runs is a week-1 deliverable, not a nice-to-have: the user called a reliable way to view results from day 1 "absolutely crucial" and wants it in every plan (1 Oct 2026).
 - Proposals are independent of existing project repos: they live in `~/GitHubProjects/proposals/<slug>/` (git, remote `ncrispino/proposals`). Code reuse from other repos is a separate decision, logged in the decision log.
 - Before any `git add -A` in a proposal repo, confirm secrets are ignored: proposals pick up `.env` files with API keys. The repo's `.gitignore` must list `.env` and `.env.*`. Never read or echo a key; scripts load it from the environment.
 - Commit and push the proposals repo as you go: after each agreed change or finished research round, commit with a short message and push to `origin main` (exports are gitignored). The user asked for this.
