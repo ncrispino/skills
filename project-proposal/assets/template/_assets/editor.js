@@ -511,8 +511,13 @@
     const tw = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
     const nodes = [];
     while (tw.nextNode()) { const t = tw.currentNode; if (r.intersectsNode(t) && t.data.trim() && !t.parentNode.closest("svg, .pp-ui")) nodes.push(t); }
-    if (!nodes.length) return;
-    nodes.forEach((t, i) => {
+    // rendered math is page-drawn (.tex-out, not saved): comment on its TeX source span instead
+    const texes = [...root.querySelectorAll ? root.querySelectorAll(".tex-out") : []].filter((x) => r.intersectsNode(x) && !x.closest("mark.cmt"));
+    const up = r.commonAncestorContainer.nodeType === 3 ? r.commonAncestorContainer.parentNode : r.commonAncestorContainer;
+    const inTex = up.closest && up.closest(".tex-out"); if (inTex && !texes.includes(inTex) && !inTex.closest("mark.cmt")) texes.push(inTex);
+    if (!nodes.length && !texes.length) return;
+    texes.forEach((x) => wrapTex(x, cid));
+    nodes.filter((t) => !t.parentNode.closest(".tex-out, span.math")).forEach((t, i) => {
       let a = t === r.startContainer ? r.startOffset : 0, b = t === r.endContainer ? r.endOffset : t.data.length;
       if (b <= a) return;
       if (b < t.data.length) t.splitText(b);
@@ -563,6 +568,26 @@
     pinComment(fig, e);
   });
   doc.addEventListener("click", (e) => { const pin = e.target.closest && e.target.closest(".cmt-pin"); if (!pin) return; const ta = cmtLayer.querySelector(`.pp-cmt[data-cid="${pin.dataset.cid}"] textarea`); if (ta) ta.focus(); });
+  function wrapTex(out, cid) {
+    const src = out.previousElementSibling; if (!src || !src.matches("span.math")) return null;
+    const m = document.createElement("mark"); m.className = "cmt"; m.dataset.cid = cid;
+    src.before(m); m.append(src, out); return m;
+  }
+  function commentOnTex(out) {
+    if (vimOn) snapshot();
+    const cid = "c" + Date.now().toString(36);
+    const m = wrapTex(out, cid); if (!m) return;
+    m.dataset.comment = "";
+    renderComments();
+    const ta = cmtLayer.querySelector(`[data-cid="${cid}"] textarea`); if (ta) ta.focus();
+    markDirty();
+  }
+  // click a formula to comment on it (like a figure)
+  doc.addEventListener("click", (e) => {
+    const out = e.target.closest && e.target.closest(".tex-out");
+    if (!out || out.closest("mark.cmt") || !sel().isCollapsed) return;
+    commentOnTex(out);
+  });
   function unwrapComment(cid) {
     if (vimOn) snapshot();
     marksOf(cid).forEach((m) => m.replaceWith(...m.childNodes));

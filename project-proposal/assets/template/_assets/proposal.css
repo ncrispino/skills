@@ -345,3 +345,7 @@ body.tex-ready #doc span.math { display: none; }
 #doc .mathblock table.sym { margin: 4px 0 10px; font: 15.5px/1.5 var(--sans); }
 #doc .mathblock table.sym td { border: 0; padding: 3px 18px 3px 0; vertical-align: top; }
 #doc .mathblock table.sym td:first-child { white-space: nowrap; }
+/* a comment on a formula: outline the drawn math instead of underlining it */
+#doc mark.cmt:has(> .tex-out) { background: none; border-bottom: 0; padding: 0; }
+#doc mark.cmt > .tex-out { background: var(--amber-bg); border-radius: 4px; box-shadow: 0 0 0 2px var(--amber); }
+#doc .tex-out { cursor: pointer; }
