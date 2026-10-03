@@ -547,6 +547,14 @@
     cmtFloat.style.top = Math.max(56, b.top - 36) + "px";
     cmtFloat.style.left = Math.min(innerWidth - 110, b.right - 40) + "px";
   });
+  // highlighting with the mouse opens a comment at once (NORMAL mode; in INSERT or with vim off a
+  // mouse selection is usually for editing, so there the floating button does it). An empty comment
+  // disappears when its box loses focus.
+  doc.addEventListener("mouseup", (e) => {
+    if (e.button !== 0 || e.target.closest("a[href], summary, figure svg")) return;
+    if (!vimOn || mode === "insert") return;
+    setTimeout(() => { const r = selRangeInDoc(); if (r && r.toString().trim().length > 1) addComment(); }, 0);
+  });
   cmtFloat.addEventListener("mousedown", (e) => { e.preventDefault(); addComment(); });
   q("#pp-cmt-btn").addEventListener("mousedown", (e) => { e.preventDefault(); addComment(); });
   document.addEventListener("keydown", (e) => { if ((e.metaKey || e.ctrlKey) && e.altKey && (e.key === "m" || e.key === "µ" || e.code === "KeyM")) { e.preventDefault(); e.stopImmediatePropagation(); addComment(); } }, true);
