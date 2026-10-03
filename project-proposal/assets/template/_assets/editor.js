@@ -298,7 +298,7 @@
     out.forEach((o) => { o.textContent = t; o.setAttribute("contenteditable", "false"); });
   }
 
-  function refreshDerived() { setTitle(); countWords(); prepFigures(); prepApprovals(); applyHideApproved(); recalcBudgets(); buildToc(); watchToc(); renderComments(); }
+  function refreshDerived() { setTitle(); countWords(); prepFigures(); prepApprovals(); applyHideApproved(); recalcBudgets(); buildToc(); watchToc(); renderComments(); renderTex(); }
 
   // ---------- persistence ----------
   let served = false, base = null, dirty = false, saving = false, saveTimer = null;
@@ -459,6 +459,32 @@
     const n = document.createElement("p"); n.className = "note"; n.innerHTML = "<br>";
     (b && b.closest("li") ? b.closest("ul,ol") : b).after(n);
     caretIn(n); setMode("insert", true); markDirty();
+  }
+
+  // ---------- math: <span class="math inline">\(…\)</span> and <span class="math display">\[…\]</span> ----------
+  // The TeX source stays in the file (pandoc reads these spans as equations for Word and Markdown);
+  // KaTeX draws a non-saved copy next to each one and CSS hides the source once it is drawn.
+  let katexP = null;
+  function loadKatex() {
+    if (window.katex) return Promise.resolve();
+    if (katexP) return katexP;
+    const V = "https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.11/";
+    document.head.append(el("link", { rel: "stylesheet", href: V + "katex.min.css" }));
+    katexP = new Promise((ok, bad) => { const sc = el("script", { src: V + "katex.min.js" }); sc.onload = ok; sc.onerror = bad; document.head.append(sc); });
+    return katexP;
+  }
+  function renderTex() {
+    const els = doc.querySelectorAll("span.math"); if (!els.length) return;
+    loadKatex().then(() => {
+      doc.querySelectorAll("span.math").forEach((m) => {
+        let out = m.nextElementSibling;
+        if (!out || !out.classList.contains("tex-out")) { out = el("span", { className: "pp-ui tex-out" }); out.contentEditable = "false"; m.after(out); }
+        const disp = m.classList.contains("display");
+        const src = m.textContent.trim().replace(/^\\[(\[]/, "").replace(/\\[)\]]$/, "");
+        if (out.dataset.src !== src) { katex.render(src, out, { displayMode: disp, throwOnError: false }); out.dataset.src = src; out.classList.toggle("tex-display", disp); }
+      });
+      document.body.classList.add("tex-ready");
+    }).catch(() => status("Could not load KaTeX; showing TeX source", "error"));
   }
 
   // ---------- margin comments ----------

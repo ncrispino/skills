@@ -311,10 +311,10 @@ body.hide-approved .approve-item.is-done { display: none; }
 #doc details.more[open] { border-left-color: var(--accent); }
 #doc details.more > summary .sum-note { color: var(--muted); font-weight: 400; }
 /* plain math: definitions in a sans block, symbols in italic serif */
-#doc .math { font: 17px/1.75 var(--serif); background: var(--wash); border-radius: 6px; padding: 12px 20px; margin: 16px 0; }
-#doc .math p { margin: 4px 0; }
-#doc .math var, #doc var { font-style: italic; font-family: var(--serif); }
-#doc .math .def { color: var(--muted); font: 14.5px/1.5 var(--sans); }
+#doc .mathblock { font: 17px/1.75 var(--serif); background: var(--wash); border-radius: 6px; padding: 12px 20px; margin: 16px 0; }
+#doc .mathblock p { margin: 4px 0; }
+#doc .mathblock var, #doc var { font-style: italic; font-family: var(--serif); }
+#doc .mathblock .def { color: var(--muted); font: 14.5px/1.5 var(--sans); }
 @media print { #doc details.more > summary::before { content: ""; } }
 
 /* margin comments: highlight in the text, card in the right margin (pp-ui, never saved) */
@@ -338,3 +338,10 @@ body.hide-approved .approve-item.is-done { display: none; }
 #doc .cmt-pin { position: absolute; width: 16px; height: 16px; margin: -8px 0 0 -8px; border-radius: 50% 50% 50% 0; background: var(--amber); border: 2px solid var(--paper); box-shadow: 0 1px 4px rgb(0 0 0 / .3); cursor: pointer; z-index: 3; }
 #doc .cmt-pin.cmt-on { transform: scale(1.3); }
 @media print { #doc .cmt-pin { display: none; } }
+
+/* TeX: source spans are hidden once KaTeX has drawn them (see editor.js renderTex) */
+body.tex-ready #doc span.math { display: none; }
+#doc .tex-out.tex-display { display: block; margin: 10px 0; overflow-x: auto; }
+#doc .mathblock table.sym { margin: 4px 0 10px; font: 15.5px/1.5 var(--sans); }
+#doc .mathblock table.sym td { border: 0; padding: 3px 18px 3px 0; vertical-align: top; }
+#doc .mathblock table.sym td:first-child { white-space: nowrap; }

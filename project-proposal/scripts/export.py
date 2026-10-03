@@ -182,15 +182,43 @@ def clean_doc(soup, keep_notes):
     return doc
 
 
+def tex_to_mathml(doc):
+    """pandoc's HTML reader does not parse <span class="math"> TeX, but it does read MathML.
+    Convert every TeX span to <math> with one pandoc call, so Word gets equations and Markdown $...$."""
+    spans = doc.select("span.math")
+    if not spans:
+        return
+    srcs = []
+    for m in spans:
+        t = m.get_text().strip()
+        t = re.sub(r"^\\[(\[]", "", t); t = re.sub(r"\\[)\]]$", "", t)
+        srcs.append(("$$%s$$" if "display" in m.get("class", []) else "$%s$") % t.strip())
+    md = "\n\n".join(f"<div class='tx{i}'>\n\n{x}\n\n</div>" for i, x in enumerate(srcs))
+    r = subprocess.run(["pandoc", "-f", "markdown", "-t", "html", "--mathml"], input=md, capture_output=True, text=True)
+    if r.returncode != 0:
+        return
+    from bs4 import BeautifulSoup as _BS
+    out = _BS(r.stdout, "html.parser")
+    for i, m in enumerate(spans):
+        d = out.select_one(f"div.tx{i} math")
+        if d is not None:
+            m.replace_with(d)
+
+
 def standalone_html(title, css, doc_html):
     return f"""<!doctype html>
 <html lang="en" data-theme="light"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>{title}</title><style>{css}
+<title>{title}</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.11/katex.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.11/katex.min.js"></script><style>{css}
 body {{ max-width: 860px; margin: 0 auto; padding: 32px 20px 80px; }}
 </style></head>
 <body><main id="doc">{doc_html}</main>
 <div id="pp-tip"></div>
+<script>/* TeX spans -> KaTeX */
+if (window.katex) document.querySelectorAll('span.math').forEach(m=>{{const d=m.classList.contains('display');const src=m.textContent.trim().replace(/^\\\\[(\\[]/,'').replace(/\\\\[)\\]]$/,'');const o=document.createElement(d?'div':'span');katex.render(src,o,{{displayMode:d,throwOnError:false}});m.replaceWith(o)}});
+</script>
 <script>/* hover tips for [data-tip] */
 const t=document.getElementById('pp-tip');
 document.addEventListener('mouseover',e=>{{const x=e.target.closest&&e.target.closest('[data-tip]');if(!x){{t.style.display='none';return}}t.textContent=x.getAttribute('data-tip');t.style.display='block'}});
@@ -280,6 +308,7 @@ def main():
         for c in doc.select(".callout, .tldr"):
             c.name = "blockquote"
         flatten_tables(doc)
+        tex_to_mathml(doc)
         img_html = outdir / f".{stem}.pandoc.html"
         img_html.write_text(f"<html><head><title>{title}</title></head><body>{doc.decode_contents()}</body></html>")
         if "docx" in fmts:
