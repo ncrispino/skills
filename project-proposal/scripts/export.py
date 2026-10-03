@@ -158,6 +158,8 @@ def clean_doc(soup, keep_notes):
     if not keep_notes:
         for m in doc.select("mark.cmt"):
             m.unwrap()
+        for m in doc.select(".cmt-pin"):
+            m.decompose()
     # collapsed <details class="more"> blocks export expanded, as a bold lead-in + content
     for d in doc.select("details"):
         sm = d.find("summary", recursive=False)

@@ -339,7 +339,8 @@
     c.querySelectorAll("#doc a[title], a[title]").forEach((x) => { if (/Cmd-click|Click to open/.test(x.title)) x.removeAttribute("title"); });
     c.querySelectorAll(".hint-open").forEach((x) => { x.classList.remove("hint-open"); });
     c.querySelectorAll("details[open]").forEach((x) => x.removeAttribute("open")); // saved collapsed
-    c.querySelectorAll("mark.cmt-on").forEach((x) => x.classList.remove("cmt-on"));
+    c.querySelectorAll(".cmt-on").forEach((x) => x.classList.remove("cmt-on"));
+    c.querySelectorAll(".cmt-pin").forEach((x) => { x.removeAttribute("title"); x.setAttribute("contenteditable", "false"); });
     c.querySelectorAll(".group-hidden, .fading, .has-comment, .is-done").forEach((x) => { x.classList.remove("group-hidden", "fading", "has-comment", "is-done"); });
     c.querySelectorAll("[class=\"\"]").forEach((x) => x.removeAttribute("class"));
     c.querySelectorAll("[data-approve-summary]").forEach((x) => x.removeAttribute("contenteditable"));
@@ -430,7 +431,7 @@
   async function askClaude(message = "") {
     if (!served) { status("Not served: Claude cannot be reached from this page", "error"); return; }
     if (dirty) await save();
-    const comments = new Set([...doc.querySelectorAll("mark.cmt[data-cid]")].map((m) => m.dataset.cid)).size;
+    const comments = new Set([...doc.querySelectorAll(".cmt[data-cid]")].map((m) => m.dataset.cid)).size;
     const notes = doc.querySelectorAll(".note").length;
     const r = await api("/api/ask", { method: "POST", headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ path: PAGE, comments, notes, message }) });
@@ -469,7 +470,7 @@
   doc.parentElement.append(cmtLayer);
   const cmtFloat = el("button", { id: "pp-cmt-float", type: "button" }, "Comment");
   document.body.append(cmtFloat);
-  const marksOf = (cid) => [...doc.querySelectorAll(`mark.cmt[data-cid="${cid}"]`)];
+  const marksOf = (cid) => [...doc.querySelectorAll(`.cmt[data-cid="${cid}"]`)];
   function selRangeInDoc() {
     const s = sel(); if (!s.rangeCount || s.isCollapsed) return null;
     const r = s.getRangeAt(0);
@@ -501,6 +502,40 @@
     const ta = cmtLayer.querySelector(`[data-cid="${cid}"] textarea`); if (ta) ta.focus();
     markDirty();
   }
+  // figures: click a spot to pin a comment there. Saved as <span class="cmt cmt-pin" data-cid
+  // data-comment data-x data-y data-target> inside the <figure> (x, y in % of the drawing;
+  // data-target is the text of what was clicked, so Claude knows which part is meant).
+  function pinComment(fig, e) {
+    const svg = fig.querySelector("svg"); const b = svg.getBoundingClientRect();
+    const t = e.target.closest("text") || e.target;
+    let target = (t.textContent || "").trim() || t.getAttribute("data-tip") || "";
+    if (!target) { const near = [...svg.querySelectorAll("text")].map((x) => { const r = x.getBoundingClientRect(); return [Math.hypot(r.left + r.width / 2 - e.clientX, r.top + r.height / 2 - e.clientY), x.textContent.trim()]; }).sort((a, c) => a[0] - c[0])[0]; if (near) target = "near: " + near[1]; }
+    if (vimOn) snapshot();
+    const cid = "c" + Date.now().toString(36);
+    const pin = document.createElement("span");
+    pin.className = "cmt cmt-pin"; pin.contentEditable = "false";
+    Object.assign(pin.dataset, { cid, comment: "", x: ((e.clientX - b.left) / b.width * 100).toFixed(1), y: ((e.clientY - b.top) / b.height * 100).toFixed(1), target: target.slice(0, 120) });
+    svg.after(pin);
+    renderComments();
+    const ta = cmtLayer.querySelector(`[data-cid="${cid}"] textarea`); if (ta) ta.focus();
+    markDirty();
+  }
+  function placePins() {
+    doc.querySelectorAll(".cmt-pin").forEach((pin) => {
+      const fig = pin.closest("figure"), svg = fig && fig.querySelector("svg"); if (!svg) return;
+      const f = fig.getBoundingClientRect(), b = svg.getBoundingClientRect();
+      pin.style.left = (b.left - f.left + b.width * (+pin.dataset.x) / 100) + "px";
+      pin.style.top = (b.top - f.top + b.height * (+pin.dataset.y) / 100) + "px";
+      pin.title = pin.dataset.comment || "Comment";
+    });
+  }
+  doc.addEventListener("click", (e) => {
+    const fig = e.target.closest && e.target.closest("figure");
+    if (!fig || !doc.contains(fig) || !e.target.closest("svg") || e.target.closest(".cmt-pin")) return;
+    if (e.button !== 0) return;
+    pinComment(fig, e);
+  });
+  doc.addEventListener("click", (e) => { const pin = e.target.closest && e.target.closest(".cmt-pin"); if (!pin) return; const ta = cmtLayer.querySelector(`.pp-cmt[data-cid="${pin.dataset.cid}"] textarea`); if (ta) ta.focus(); });
   function unwrapComment(cid) {
     if (vimOn) snapshot();
     marksOf(cid).forEach((m) => m.replaceWith(...m.childNodes));
@@ -508,7 +543,8 @@
   }
   function renderComments() {
     if (!cmtLayer) return;
-    const ids = [...new Set([...doc.querySelectorAll("mark.cmt[data-cid]")].map((m) => m.dataset.cid))];
+    placePins();
+    const ids = [...new Set([...doc.querySelectorAll(".cmt[data-cid]")].map((m) => m.dataset.cid))];
     const focused = document.activeElement && document.activeElement.closest && document.activeElement.closest(".pp-cmt");
     [...cmtLayer.children].forEach((c) => { if (!ids.includes(c.dataset.cid)) c.remove(); });
     const pr = doc.parentElement.getBoundingClientRect(), dr = doc.getBoundingClientRect();
@@ -528,7 +564,7 @@
     items.forEach(({ cid, first, top }) => {
       let card = cmtLayer.querySelector(`.pp-cmt[data-cid="${cid}"]`);
       if (!card) {
-        card = el("div", { className: "pp-cmt" }, `<div class="pp-cmt-h"><span>Comment</span><button type="button" class="pp-cmt-x" title="Resolve: remove the highlight and the comment">Resolve</button></div><textarea rows="2" placeholder="Comment for Claude…"></textarea><div class="pp-cmt-reply"></div>`);
+        card = el("div", { className: "pp-cmt" }, `<div class="pp-cmt-h"><span>${first.classList.contains("cmt-pin") ? "Figure comment" : "Comment"}</span><button type="button" class="pp-cmt-x" title="Resolve: remove the highlight and the comment">Resolve</button></div><textarea rows="2" placeholder="Comment for Claude…"></textarea><div class="pp-cmt-reply"></div>`);
         card.dataset.cid = cid;
         const ta = card.querySelector("textarea");
         ta.value = first.dataset.comment || "";
@@ -549,8 +585,8 @@
       card.style.top = y + "px"; floor = y + card.offsetHeight + 8;
     });
   }
-  doc.addEventListener("mouseover", (e) => { const m = e.target.closest && e.target.closest("mark.cmt"); if (!m) return; const c = cmtLayer.querySelector(`.pp-cmt[data-cid="${m.dataset.cid}"]`); if (c) c.classList.add("on"); });
-  doc.addEventListener("mouseout", (e) => { const m = e.target.closest && e.target.closest("mark.cmt"); if (!m) return; const c = cmtLayer.querySelector(`.pp-cmt[data-cid="${m.dataset.cid}"]`); if (c) c.classList.remove("on"); });
+  doc.addEventListener("mouseover", (e) => { const m = e.target.closest && e.target.closest(".cmt[data-cid]"); if (!m) return; const c = cmtLayer.querySelector(`.pp-cmt[data-cid="${m.dataset.cid}"]`); if (c) c.classList.add("on"); });
+  doc.addEventListener("mouseout", (e) => { const m = e.target.closest && e.target.closest(".cmt[data-cid]"); if (!m) return; const c = cmtLayer.querySelector(`.pp-cmt[data-cid="${m.dataset.cid}"]`); if (c) c.classList.remove("on"); });
   document.addEventListener("selectionchange", () => {
     const r = selRangeInDoc();
     if (!r) { cmtFloat.style.display = "none"; return; }
