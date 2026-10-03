@@ -28,6 +28,7 @@
     <button id="pp-hints" aria-pressed="false" title="Show the template guidance for every section">Guide</button>
     <button id="pp-note" title="Insert a note for Claude after the current block (vim: gc)">Add note</button>
     <button id="pp-cmt-btn" title="Comment on the selected text (Cmd/Ctrl-Alt-M, :comment)">Comment</button>
+    <button id="pp-ask" title="Save, then tell Claude to address this page's comments and notes (:ask). Shift-click to add a message.">Ask Claude</button>
     <span class="pp-menu" id="pp-export">
       <button title="Export; figures become images in Word and Markdown">Export</button>
       <span class="pp-menu-list">
@@ -425,6 +426,17 @@
 
   // ---------- toolbar actions ----------
   q("#pp-note").onclick = () => insertNote();
+  // Ask Claude: save, then append a request to .claude-asks.jsonl, which a watching Claude session reacts to
+  async function askClaude(message = "") {
+    if (!served) { status("Not served: Claude cannot be reached from this page", "error"); return; }
+    if (dirty) await save();
+    const comments = new Set([...doc.querySelectorAll("mark.cmt[data-cid]")].map((m) => m.dataset.cid)).size;
+    const notes = doc.querySelectorAll(".note").length;
+    const r = await api("/api/ask", { method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ path: PAGE, comments, notes, message }) });
+    status(r.ok ? `Sent to Claude: ${comments} comment${comments === 1 ? "" : "s"}, ${notes} note${notes === 1 ? "" : "s"}${message ? ", with a message" : ""}` : "Ask failed: " + (r.error || r.status), r.ok ? "" : "error");
+  }
+  q("#pp-ask").onclick = (e) => { if (e.shiftKey) { const m = prompt("Message for Claude (optional)"); if (m !== null) askClaude(m); } else askClaude(); };
   const exp = q("#pp-export");
   exp.querySelector(":scope > button").onclick = () => exp.classList.toggle("open");
   exp.querySelectorAll("[data-f]").forEach((b) => { b.onclick = () => { exp.classList.remove("open"); exportAs(b.dataset.f); }; });
@@ -733,6 +745,7 @@
     if (name === "export") return exportAs(arg || "docx");
     if (name === "note") return insertNote();
     if (name === "comment") return addComment();
+    if (name === "ask") return askClaude(arg);
     if (name === "guide") return q("#pp-hints").click();
     if (name === "toc") return tocBtn.click();
     if (name === "noh") return sel().collapseToStart();

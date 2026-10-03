@@ -9,6 +9,10 @@ Endpoints (localhost only):
     POST /api/save   {path, html, base}    -> replaces the region between
          <!-- DOC:START --> and <!-- DOC:END -->; 409 if file changed since `base`
     POST /api/export {path, format}        -> runs export.py; {"outputs": [...]}
+    POST /api/ask    {path, comments, notes, message}
+                                           -> appends one JSON line to <dir>/.claude-asks.jsonl;
+         a Claude session watching that file (Monitor: tail -F) wakes up and
+         addresses the page's comments and notes
 
 Everything else is served as static files with caching disabled, so the
 browser always sees Claude's latest edits.
@@ -109,6 +113,15 @@ class Handler(SimpleHTTPRequestHandler):
             out = json.loads(r.stdout.strip().splitlines()[-1])
             rel = [str(Path(o).resolve().relative_to(self.root)) for o in out["outputs"]]
             return self._json(200, {"outputs": rel})
+
+        if u.path == "/api/ask":
+            import time
+            rec = {"ts": time.strftime("%Y-%m-%dT%H:%M:%S"), "path": str(p.relative_to(self.root)),
+                   "comments": int(data.get("comments") or 0), "notes": int(data.get("notes") or 0),
+                   "message": str(data.get("message") or "")[:2000]}
+            with open(self.root / ".claude-asks.jsonl", "a") as f:
+                f.write(json.dumps(rec) + "\n")
+            return self._json(200, {"ok": True})
 
         return self._json(404, {"error": "unknown endpoint"})
 
