@@ -27,6 +27,7 @@
     <a class="btn" id="pp-nav"></a>
     <button id="pp-hints" aria-pressed="false" title="Show the template guidance for every section">Guide</button>
     <button id="pp-note" title="Insert a note for Claude after the current block (vim: gc)">Add note</button>
+    <button id="pp-cmt-btn" title="Comment on the selected text (Cmd/Ctrl-Alt-M, :comment)">Comment</button>
     <span class="pp-menu" id="pp-export">
       <button title="Export; figures become images in Word and Markdown">Export</button>
       <span class="pp-menu-list">
@@ -296,7 +297,7 @@
     out.forEach((o) => { o.textContent = t; o.setAttribute("contenteditable", "false"); });
   }
 
-  function refreshDerived() { setTitle(); countWords(); prepFigures(); prepApprovals(); applyHideApproved(); recalcBudgets(); buildToc(); watchToc(); }
+  function refreshDerived() { setTitle(); countWords(); prepFigures(); prepApprovals(); applyHideApproved(); recalcBudgets(); buildToc(); watchToc(); renderComments(); }
 
   // ---------- persistence ----------
   let served = false, base = null, dirty = false, saving = false, saveTimer = null;
@@ -337,6 +338,7 @@
     c.querySelectorAll("#doc a[title], a[title]").forEach((x) => { if (/Cmd-click|Click to open/.test(x.title)) x.removeAttribute("title"); });
     c.querySelectorAll(".hint-open").forEach((x) => { x.classList.remove("hint-open"); });
     c.querySelectorAll("details[open]").forEach((x) => x.removeAttribute("open")); // saved collapsed
+    c.querySelectorAll("mark.cmt-on").forEach((x) => x.classList.remove("cmt-on"));
     c.querySelectorAll(".group-hidden, .fading, .has-comment, .is-done").forEach((x) => { x.classList.remove("group-hidden", "fading", "has-comment", "is-done"); });
     c.querySelectorAll("[class=\"\"]").forEach((x) => x.removeAttribute("class"));
     c.querySelectorAll("[data-approve-summary]").forEach((x) => x.removeAttribute("contenteditable"));
@@ -445,6 +447,114 @@
     (b && b.closest("li") ? b.closest("ul,ol") : b).after(n);
     caretIn(n); setMode("insert", true); markDirty();
   }
+
+  // ---------- margin comments ----------
+  // Select text, then Comment (toolbar, floating button, Cmd/Ctrl-Alt-M or :comment). The text is
+  // wrapped in <mark class="cmt" data-cid data-comment>, saved in the file; the card in the right
+  // margin edits data-comment. Claude greps class="cmt", fixes the text and unwraps the mark, or
+  // answers in data-reply. Resolve unwraps it. Export drops the marks and keeps the text.
+  const cmtLayer = el("div", { id: "pp-cmts", className: "pp-cmts" });
+  doc.parentElement.append(cmtLayer);
+  const cmtFloat = el("button", { id: "pp-cmt-float", type: "button" }, "Comment");
+  document.body.append(cmtFloat);
+  const marksOf = (cid) => [...doc.querySelectorAll(`mark.cmt[data-cid="${cid}"]`)];
+  function selRangeInDoc() {
+    const s = sel(); if (!s.rangeCount || s.isCollapsed) return null;
+    const r = s.getRangeAt(0);
+    return doc.contains(r.commonAncestorContainer) ? r : null;
+  }
+  function addComment() {
+    const r = selRangeInDoc();
+    if (!r) { status("Select some text to comment on", "error"); return; }
+    if (vimOn) snapshot();
+    const cid = "c" + Date.now().toString(36);
+    const root = r.commonAncestorContainer.nodeType === 3 ? r.commonAncestorContainer.parentNode : r.commonAncestorContainer;
+    const tw = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+    const nodes = [];
+    while (tw.nextNode()) { const t = tw.currentNode; if (r.intersectsNode(t) && t.data.trim() && !t.parentNode.closest("svg, .pp-ui")) nodes.push(t); }
+    if (!nodes.length) return;
+    nodes.forEach((t, i) => {
+      let a = t === r.startContainer ? r.startOffset : 0, b = t === r.endContainer ? r.endOffset : t.data.length;
+      if (b <= a) return;
+      if (b < t.data.length) t.splitText(b);
+      const mid = a > 0 ? t.splitText(a) : t;
+      const m = document.createElement("mark"); m.className = "cmt"; m.dataset.cid = cid;
+      mid.replaceWith(m); m.append(mid);
+    });
+    const first = marksOf(cid)[0]; if (!first) return;
+    first.dataset.comment = "";
+    sel().removeAllRanges(); cmtFloat.style.display = "none";
+    if (vimOn) setMode("normal");
+    renderComments();
+    const ta = cmtLayer.querySelector(`[data-cid="${cid}"] textarea`); if (ta) ta.focus();
+    markDirty();
+  }
+  function unwrapComment(cid) {
+    if (vimOn) snapshot();
+    marksOf(cid).forEach((m) => m.replaceWith(...m.childNodes));
+    doc.normalize(); renderComments(); markDirty();
+  }
+  function renderComments() {
+    if (!cmtLayer) return;
+    const ids = [...new Set([...doc.querySelectorAll("mark.cmt[data-cid]")].map((m) => m.dataset.cid))];
+    const focused = document.activeElement && document.activeElement.closest && document.activeElement.closest(".pp-cmt");
+    [...cmtLayer.children].forEach((c) => { if (!ids.includes(c.dataset.cid)) c.remove(); });
+    const pr = doc.parentElement.getBoundingClientRect(), dr = doc.getBoundingClientRect();
+    const room = innerWidth - dr.right - 24;
+    // wide window: cards sit on the desk right of the page; narrow: they hug the window edge, over the page margin
+    const tight = room < 250, W = tight ? 216 : 246;
+    cmtLayer.classList.toggle("tight", tight);
+    cmtLayer.style.setProperty("--cmt-w", W + "px");
+    cmtLayer.style.left = (tight ? innerWidth - pr.left - W - 10 : dr.right - pr.left + 16) + "px";
+    const items = ids.map((cid) => {
+      const ms = marksOf(cid), first = ms.find((m) => m.dataset.comment !== undefined) || ms[0];
+      const vis = ms.find((m) => m.offsetParent); // inside a closed <details>: anchor on its summary
+      const anchor = vis || (first.closest("details") && first.closest("details").querySelector("summary")) || first;
+      return { cid, first, top: anchor.getBoundingClientRect().top - pr.top };
+    }).sort((a, b) => a.top - b.top);
+    let floor = 0;
+    items.forEach(({ cid, first, top }) => {
+      let card = cmtLayer.querySelector(`.pp-cmt[data-cid="${cid}"]`);
+      if (!card) {
+        card = el("div", { className: "pp-cmt" }, `<div class="pp-cmt-h"><span>Comment</span><button type="button" class="pp-cmt-x" title="Resolve: remove the highlight and the comment">Resolve</button></div><textarea rows="2" placeholder="Comment for Claude…"></textarea><div class="pp-cmt-reply"></div>`);
+        card.dataset.cid = cid;
+        const ta = card.querySelector("textarea");
+        ta.value = first.dataset.comment || "";
+        ta.addEventListener("input", () => { const f = marksOf(cid).find((m) => m.dataset.comment !== undefined) || marksOf(cid)[0]; if (f) { f.dataset.comment = ta.value; markDirty(); } ta.style.height = "auto"; ta.style.height = ta.scrollHeight + "px"; });
+        ta.addEventListener("blur", () => { if (!ta.value.trim() && !(first.dataset.reply)) setTimeout(() => { if (document.activeElement !== ta && marksOf(cid).length && !((marksOf(cid)[0].dataset.comment || "").trim())) unwrapComment(cid); }, 150); });
+        ta.addEventListener("keydown", (e) => { if (e.key === "Escape") { ta.blur(); doc.focus(); } e.stopPropagation(); });
+        card.querySelector(".pp-cmt-x").onclick = () => unwrapComment(cid);
+        card.addEventListener("mouseenter", () => marksOf(cid).forEach((m) => m.classList.add("cmt-on")));
+        card.addEventListener("mouseleave", () => marksOf(cid).forEach((m) => m.classList.remove("cmt-on")));
+        cmtLayer.append(card);
+      } else if (card !== focused) {
+        const ta = card.querySelector("textarea"); if (ta.value !== (first.dataset.comment || "")) ta.value = first.dataset.comment || "";
+      }
+      const rep = card.querySelector(".pp-cmt-reply");
+      rep.textContent = first.dataset.reply ? "Claude: " + first.dataset.reply : ""; rep.style.display = first.dataset.reply ? "" : "none";
+      const ta = card.querySelector("textarea"); ta.style.height = "auto"; ta.style.height = ta.scrollHeight + "px";
+      const y = Math.max(top - 6, floor);
+      card.style.top = y + "px"; floor = y + card.offsetHeight + 8;
+    });
+  }
+  doc.addEventListener("mouseover", (e) => { const m = e.target.closest && e.target.closest("mark.cmt"); if (!m) return; const c = cmtLayer.querySelector(`.pp-cmt[data-cid="${m.dataset.cid}"]`); if (c) c.classList.add("on"); });
+  doc.addEventListener("mouseout", (e) => { const m = e.target.closest && e.target.closest("mark.cmt"); if (!m) return; const c = cmtLayer.querySelector(`.pp-cmt[data-cid="${m.dataset.cid}"]`); if (c) c.classList.remove("on"); });
+  document.addEventListener("selectionchange", () => {
+    const r = selRangeInDoc();
+    if (!r) { cmtFloat.style.display = "none"; return; }
+    const b = r.getBoundingClientRect(); if (!b.width) { cmtFloat.style.display = "none"; return; }
+    cmtFloat.style.display = "block";
+    cmtFloat.style.top = Math.max(56, b.top - 36) + "px";
+    cmtFloat.style.left = Math.min(innerWidth - 110, b.right - 40) + "px";
+  });
+  cmtFloat.addEventListener("mousedown", (e) => { e.preventDefault(); addComment(); });
+  q("#pp-cmt-btn").addEventListener("mousedown", (e) => { e.preventDefault(); addComment(); });
+  document.addEventListener("keydown", (e) => { if ((e.metaKey || e.ctrlKey) && e.altKey && (e.key === "m" || e.key === "µ" || e.code === "KeyM")) { e.preventDefault(); e.stopImmediatePropagation(); addComment(); } }, true);
+  let cmtRaf = 0; const cmtLater = () => { cancelAnimationFrame(cmtRaf); cmtRaf = requestAnimationFrame(renderComments); };
+  addEventListener("resize", cmtLater);
+  doc.addEventListener("input", cmtLater);
+  doc.addEventListener("toggle", cmtLater, true);
+  doc.addEventListener("click", () => setTimeout(cmtLater, 0));
 
   // ---------- selection helpers ----------
   const sel = () => getSelection();
@@ -614,6 +724,7 @@
     if (name === "e!" || name === "e") return reload();
     if (name === "export") return exportAs(arg || "docx");
     if (name === "note") return insertNote();
+    if (name === "comment") return addComment();
     if (name === "guide") return q("#pp-hints").click();
     if (name === "toc") return tocBtn.click();
     if (name === "noh") return sel().collapseToStart();

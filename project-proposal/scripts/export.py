@@ -154,6 +154,10 @@ def clean_doc(soup, keep_notes):
                 el["class"] = [c for c in el.get("class", []) if c != "hint"]
             else:
                 el.decompose()
+    # margin comments: drop the comment, keep the text (kept as a highlight with --keep-notes)
+    if not keep_notes:
+        for m in doc.select("mark.cmt"):
+            m.unwrap()
     # collapsed <details class="more"> blocks export expanded, as a bold lead-in + content
     for d in doc.select("details"):
         sm = d.find("summary", recursive=False)

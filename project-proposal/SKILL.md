@@ -94,6 +94,7 @@ The user edits in the browser (autosave ~1.5s after typing, `:w`, Cmd-S). You ed
 - **Re-read `proposal.html` before every edit**; the user may have changed it. The server's hash check stops the browser overwriting your edits: the page live-reloads when the user has no unsaved changes, and shows a conflict banner if both changed.
 - Edit only between `DOC:START` and `DOC:END` unless changing layout.
 - **Every turn, grep for `class="note"`.** Notes are the user's inline comments to you (toolbar "+ Note" or vim `gc`). Address each, then delete it (or reply in the chat if it needs discussion).
+- **Every turn, also grep for `class="cmt"`.** These are margin comments: the user highlights text and types a comment (toolbar Comment, the floating Comment button on a selection, Cmd/Ctrl-Alt-M, or `:comment`). Each is `<mark class="cmt" data-cid="…" data-comment="…">text</mark>`; one comment can span several marks with the same `data-cid`, and only the first carries `data-comment`. To address one, fix the text and unwrap every mark with that `data-cid` (keep the inner text). If it needs discussion instead, keep the marks and set `data-reply="…"` on the first one; the card shows it as "Claude: …". When the user says "address the comments", do all of them in one pass and list in chat what changed for each.
 - Keep edits surgical. Never regenerate the whole doc; the user's wording wins over yours.
 - Log agreed decisions in the decision-log appendix with the date (e.g. "cut R3 from scope: budget"). This is how a later session knows why things are the way they are.
 
@@ -180,6 +181,7 @@ Vim is on by default (toggle in the toolbar or `:vim off`). Mode shows top-left;
 - Review pages hide approved items by default ("Show approved (n)" in the toolbar brings them back; remembered per browser). Approved items with a comment stay visible, labelled "Approved, with comment": treat that comment as a requested change when applying the item. An item fades out a moment after it is approved, and a group heading disappears once everything in it is approved.
 - The sidebar also links the whole project on every page: proposal, findings to review (with the open count), and each research note (dot color = status). It reads `research/index.html` and `research/review.html`, so keep those two files current.
 - `gc` or "+ Note" inserts a note for Claude after the current block.
+- Comments: select text, then click the floating Comment button (or toolbar Comment, Cmd/Ctrl-Alt-M, `:comment`). The text is highlighted and a card opens in the right margin to type in; it autosaves into the file. Resolve removes the highlight. Hovering a card highlights its text. Export drops comments and keeps the text.
 - Links: in NORMAL mode a click (or Enter with the caret on the link) opens it; in INSERT mode or with vim off, a click places the caret and Cmd/Ctrl-click opens. Pages open in NORMAL mode.
 - In insert mode, at the start of an empty paragraph: `## ` → heading, `### ` → subheading, `- ` → bullet list, `1. ` → numbered list, `> ` → quote.
 - Paste is plain text. Figures are not editable in the browser (their captions are); ask Claude to change them.

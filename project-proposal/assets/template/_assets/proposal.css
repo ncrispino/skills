@@ -316,3 +316,18 @@ body.hide-approved .approve-item.is-done { display: none; }
 #doc .math var, #doc var { font-style: italic; font-family: var(--serif); }
 #doc .math .def { color: var(--muted); font: 14.5px/1.5 var(--sans); }
 @media print { #doc details.more > summary::before { content: ""; } }
+
+/* margin comments: highlight in the text, card in the right margin (pp-ui, never saved) */
+#doc mark.cmt { background: var(--amber-bg); color: inherit; border-bottom: 2px solid var(--amber); padding: 0 1px; border-radius: 2px; cursor: pointer; }
+#doc mark.cmt.cmt-on { background: color-mix(in srgb, var(--amber) 35%, var(--paper)); }
+.pp-cmts { position: absolute; top: 0; width: var(--cmt-w, 246px); z-index: 6; font: 14px/1.45 var(--sans); }
+.pp-cmt { position: absolute; left: 0; width: var(--cmt-w, 246px); background: var(--paper); border: 1px solid var(--faint); border-left: 3px solid var(--amber); border-radius: 6px; padding: 6px 10px 8px; box-shadow: 0 1px 3px rgb(0 0 0 / .08); transition: top .12s; }
+.pp-cmts.tight .pp-cmt { box-shadow: 0 4px 14px rgb(0 0 0 / .18); }
+.pp-cmt.on, .pp-cmt:focus-within { border-color: var(--amber); }
+.pp-cmt-h { display: flex; justify-content: space-between; align-items: center; color: var(--muted); font-size: 12.5px; margin-bottom: 4px; }
+.pp-cmt-x { font: 12.5px var(--sans); color: var(--muted); background: none; border: 0; cursor: pointer; padding: 0; }
+.pp-cmt-x:hover { color: var(--green); }
+.pp-cmt textarea { width: 100%; resize: none; overflow: hidden; border: 0; outline: 0; background: transparent; color: var(--ink); font: 14px/1.45 var(--sans); padding: 0; }
+.pp-cmt-reply { margin-top: 6px; padding-top: 6px; border-top: 1px solid var(--faint); color: var(--muted); }
+#pp-cmt-float { display: none; position: fixed; z-index: 30; font: 500 13px var(--sans); padding: 4px 10px; border-radius: 6px; border: 1px solid var(--amber); background: var(--paper); color: var(--amber); cursor: pointer; box-shadow: 0 2px 8px rgb(0 0 0 / .15); }
+@media print { #doc mark.cmt { background: none; border: 0; } .pp-cmts, #pp-cmt-float { display: none !important; } }
