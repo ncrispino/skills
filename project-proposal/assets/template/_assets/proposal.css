@@ -349,3 +349,10 @@ body.tex-ready #doc span.math { display: none; }
 #doc mark.cmt:has(> .tex-out) { background: none; border-bottom: 0; padding: 0; }
 #doc mark.cmt > .tex-out { background: var(--amber-bg); border-radius: 4px; box-shadow: 0 0 0 2px var(--amber); }
 #doc .tex-out { cursor: pointer; }
+
+/* comment cards collapse to one line when not in use */
+.pp-cmt .pp-cmt-pre { display: none; }
+.pp-cmt:not(.open) { padding-bottom: 6px; cursor: pointer; opacity: .85; }
+.pp-cmt:not(.open):hover, .pp-cmt.on { opacity: 1; }
+.pp-cmt:not(.open) .pp-cmt-pre { display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pp-cmt:not(.open) textarea, .pp-cmt:not(.open) .pp-cmt-reply { display: none !important; }

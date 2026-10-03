@@ -530,7 +530,7 @@
     sel().removeAllRanges(); cmtFloat.style.display = "none";
     if (vimOn) setMode("normal");
     renderComments();
-    const ta = cmtLayer.querySelector(`[data-cid="${cid}"] textarea`); if (ta) ta.focus();
+    openCard(cid);
     markDirty();
   }
   // figures: click a spot to pin a comment there. Saved as <span class="cmt cmt-pin" data-cid
@@ -549,7 +549,7 @@
     Object.assign(pin.dataset, { cid, comment: "", x: ((e.clientX - b.left) / b.width * 100).toFixed(1), y: ((e.clientY - b.top) / b.height * 100).toFixed(1), target: target.slice(0, 120) });
     svg.after(pin);
     renderComments();
-    const ta = cmtLayer.querySelector(`[data-cid="${cid}"] textarea`); if (ta) ta.focus();
+    openCard(cid);
     markDirty();
   }
   function placePins() {
@@ -567,7 +567,8 @@
     if (e.button !== 0) return;
     pinComment(fig, e);
   });
-  doc.addEventListener("click", (e) => { const pin = e.target.closest && e.target.closest(".cmt-pin"); if (!pin) return; const ta = cmtLayer.querySelector(`.pp-cmt[data-cid="${pin.dataset.cid}"] textarea`); if (ta) ta.focus(); });
+  doc.addEventListener("click", (e) => { const m = e.target.closest && e.target.closest("mark.cmt"); if (!m || !sel().isCollapsed) return; openCard(m.dataset.cid); });
+  doc.addEventListener("click", (e) => { const pin = e.target.closest && e.target.closest(".cmt-pin"); if (!pin) return; openCard(pin.dataset.cid); });
   function wrapTex(out, cid) {
     const src = out.previousElementSibling; if (!src || !src.matches("span.math")) return null;
     const m = document.createElement("mark"); m.className = "cmt"; m.dataset.cid = cid;
@@ -579,7 +580,7 @@
     const m = wrapTex(out, cid); if (!m) return;
     m.dataset.comment = "";
     renderComments();
-    const ta = cmtLayer.querySelector(`[data-cid="${cid}"] textarea`); if (ta) ta.focus();
+    openCard(cid);
     markDirty();
   }
   // click a formula to comment on it (like a figure)
@@ -592,6 +593,10 @@
     if (vimOn) snapshot();
     marksOf(cid).forEach((m) => m.replaceWith(...m.childNodes));
     doc.normalize(); renderComments(); markDirty();
+  }
+  function openCard(cid) {
+    const card = cmtLayer.querySelector(`.pp-cmt[data-cid="${cid}"]`); if (!card) return;
+    card.classList.add("open"); renderComments(); card.querySelector("textarea").focus();
   }
   function renderComments() {
     if (!cmtLayer) return;
@@ -616,11 +621,15 @@
     items.forEach(({ cid, first, top }) => {
       let card = cmtLayer.querySelector(`.pp-cmt[data-cid="${cid}"]`);
       if (!card) {
-        card = el("div", { className: "pp-cmt" }, `<div class="pp-cmt-h"><span>${first.classList.contains("cmt-pin") ? "Figure comment" : "Comment"}</span><button type="button" class="pp-cmt-x" title="Resolve: remove the highlight and the comment">Resolve</button></div><textarea rows="2" placeholder="Comment for Claude…"></textarea><div class="pp-cmt-reply"></div>`);
+        card = el("div", { className: "pp-cmt" }, `<div class="pp-cmt-h"><span>${first.classList.contains("cmt-pin") ? "Figure comment" : "Comment"}</span><button type="button" class="pp-cmt-x" title="Resolve: remove the highlight and the comment">Resolve</button></div><div class="pp-cmt-pre"></div><textarea rows="2" placeholder="Comment for Claude…"></textarea><div class="pp-cmt-reply"></div>`);
         card.dataset.cid = cid;
         const ta = card.querySelector("textarea");
         ta.value = first.dataset.comment || "";
         ta.addEventListener("input", () => { const f = marksOf(cid).find((m) => m.dataset.comment !== undefined) || marksOf(cid)[0]; if (f) { f.dataset.comment = ta.value; markDirty(); } ta.style.height = "auto"; ta.style.height = ta.scrollHeight + "px"; });
+        // collapsed to a one-line preview unless it is being read or edited
+        ta.addEventListener("focus", () => { card.classList.add("open"); cmtLater(); });
+        card.addEventListener("mousedown", (e) => { if (e.target.closest(".pp-cmt-x")) return; if (!card.classList.contains("open")) { e.preventDefault(); card.classList.add("open"); renderComments(); ta.focus(); } });
+        ta.addEventListener("blur", () => { setTimeout(() => { if (document.activeElement !== ta) { card.classList.remove("open"); card.querySelector(".pp-cmt-pre").textContent = ta.value.trim() || "(empty)"; cmtLater(); } }, 120); });
         ta.addEventListener("blur", () => { if (!ta.value.trim() && !(first.dataset.reply)) setTimeout(() => { if (document.activeElement !== ta && marksOf(cid).length && !((marksOf(cid)[0].dataset.comment || "").trim())) unwrapComment(cid); }, 150); });
         ta.addEventListener("keydown", (e) => { if (e.key === "Escape") { ta.blur(); doc.focus(); } e.stopPropagation(); });
         card.querySelector(".pp-cmt-x").onclick = () => unwrapComment(cid);
@@ -630,6 +639,7 @@
       } else if (card !== focused) {
         const ta = card.querySelector("textarea"); if (ta.value !== (first.dataset.comment || "")) ta.value = first.dataset.comment || "";
       }
+      card.querySelector(".pp-cmt-pre").textContent = (first.dataset.comment || "").trim() || "(empty)";
       const rep = card.querySelector(".pp-cmt-reply");
       rep.textContent = first.dataset.reply ? "Claude: " + first.dataset.reply : ""; rep.style.display = first.dataset.reply ? "" : "none";
       const ta = card.querySelector("textarea"); ta.style.height = "auto"; ta.style.height = ta.scrollHeight + "px";
