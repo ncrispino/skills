@@ -597,9 +597,10 @@
   }
   // ---------- change marks: what Claude changed, until you mark it read ----------
   // <ins class="chg" data-chg="id" data-note="what changed (and which comment it answers)">…</ins>
-  const chgsOf = (chg) => [...doc.querySelectorAll(`ins.chg[data-chg="${chg}"]`)];
+  // text changes are <ins class="chg">; changed figure labels carry data-chg on the SVG element itself
+  const chgsOf = (chg) => [...doc.querySelectorAll(`[data-chg="${chg}"]`)];
   function markRead(chg) {
-    chgsOf(chg).forEach((m) => m.replaceWith(...m.childNodes)); doc.normalize(); renderComments(); markDirty();
+    chgsOf(chg).forEach((m) => { if (m.matches("ins.chg")) m.replaceWith(...m.childNodes); else { m.removeAttribute("data-chg"); m.removeAttribute("data-note"); m.classList.remove("cmt-on"); } }); doc.normalize(); renderComments(); markDirty();
   }
   function placeChgCard(chg, first, top, floor) {
     let card = cmtLayer.querySelector(`.pp-chg[data-chg="${chg}"]`);
@@ -622,7 +623,7 @@
   doc.addEventListener("click", (e) => { const m = e.target.closest && e.target.closest("ins.chg"); if (!m) return; const c = cmtLayer.querySelector(`.pp-chg[data-chg="${m.dataset.chg}"]`); if (c && !c.classList.contains("open")) { c.classList.add("open"); renderComments(); } });
   let chgAt = -1;
   function nextChange() {
-    const ids = [...new Set([...doc.querySelectorAll("ins.chg[data-chg]")].map((m) => m.dataset.chg))]; if (!ids.length) return;
+    const ids = [...new Set([...doc.querySelectorAll("[data-chg]")].map((m) => m.dataset.chg))]; if (!ids.length) return;
     chgAt = (chgAt + 1) % ids.length;
     const m = chgsOf(ids[chgAt])[0]; const d = m.closest("details"); if (d) d.open = true;
     m.scrollIntoView({ block: "center" });
@@ -631,7 +632,7 @@
     renderComments();
   }
   q("#pp-chg-btn").onclick = (e) => {
-    if (e.shiftKey) { if (confirm("Mark every change as read?")) { [...new Set([...doc.querySelectorAll("ins.chg[data-chg]")].map((m) => m.dataset.chg))].forEach(markRead); } return; }
+    if (e.shiftKey) { if (confirm("Mark every change as read?")) { [...new Set([...doc.querySelectorAll("[data-chg]")].map((m) => m.dataset.chg))].forEach(markRead); } return; }
     nextChange();
   };
   function openCard(cid) {
@@ -642,7 +643,7 @@
     if (!cmtLayer) return;
     placePins();
     const ids = [...new Set([...doc.querySelectorAll(".cmt[data-cid]")].map((m) => m.dataset.cid))];
-    const chgIds = [...new Set([...doc.querySelectorAll("ins.chg[data-chg]")].map((m) => m.dataset.chg))];
+    const chgIds = [...new Set([...doc.querySelectorAll("[data-chg]")].map((m) => m.dataset.chg))];
     const focused = document.activeElement && document.activeElement.closest && document.activeElement.closest(".pp-cmt");
     [...cmtLayer.children].forEach((c) => { if (c.dataset.chg ? !chgIds.includes(c.dataset.chg) : !ids.includes(c.dataset.cid)) c.remove(); });
     const cb = q("#pp-chg-btn"); if (cb) { cb.hidden = !chgIds.length; cb.textContent = `Changes (${chgIds.length})`; }
@@ -661,7 +662,7 @@
     });
     chgIds.forEach((chg) => {
       const ms = chgsOf(chg), first = ms.find((m) => m.dataset.note !== undefined) || ms[0];
-      const vis = ms.find((m) => m.offsetParent);
+      const vis = ms.find((m) => m.offsetParent || (m.closest("svg") && m.getClientRects().length));
       const anchor = vis || (first.closest("details") && first.closest("details").querySelector("summary")) || first;
       items.push({ chg, first, top: anchor.getBoundingClientRect().top - pr.top });
     });

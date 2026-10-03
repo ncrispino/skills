@@ -162,6 +162,10 @@ def clean_doc(soup, keep_notes):
             m.decompose()
         for m in doc.select("ins.chg"):
             m.unwrap()
+        for m in doc.select("[data-chg]"):
+            del m["data-chg"]
+            if m.has_attr("data-note"):
+                del m["data-note"]
     # collapsed <details class="more"> blocks export expanded, as a bold lead-in + content
     for d in doc.select("details"):
         sm = d.find("summary", recursive=False)

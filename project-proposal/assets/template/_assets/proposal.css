@@ -368,3 +368,5 @@ body.tex-ready #doc span.math { display: none; }
 .pp-chg.open .pp-cmt-pre { display: none !important; }
 #pp-chg-btn { color: var(--green); }
 @media print { #doc ins.chg { background: none; border: 0; padding: 0; margin: 0; } }
+#doc svg [data-chg] { fill: var(--green) !important; font-weight: 700; }
+#doc svg [data-chg].cmt-on { text-decoration: underline; }
