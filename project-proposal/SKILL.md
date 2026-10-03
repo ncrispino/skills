@@ -218,6 +218,9 @@ Record preferences, not one-off content. If a later session contradicts an entry
 - Visual quality matters: the user rejected the first, web-app-like design as ugly and hard to read. Check every page with screenshots in light and dark before showing it.
 - The user prefers a wide, large page: 1000px page, 19px body text, collapsible outline. A narrow column throws them off.
 - The summary uses plain labels (The problem, Hypothesis, First experiment, We succeed if, We stop if), each on its own line above full-width text. The user found "Bet" / "Kill if" labels and a two-column layout hard to read.
+- Progressive disclosure: the main line of each section is short and readable on its own; supporting detail (long tables, taxonomies, arguments, secondary figures, older decision-log entries) goes in `<details class="more"><summary>One line saying what is inside</summary>…</details>`, which the editor saves collapsed and export expands. The user found a 130 KB proposal "very long and hard to understand" (3 Oct 2026).
+- For setups with several agents, tasks or conditions, include a short "setup in symbols" block (`<div class="math">`, `<p class="def">` labels, `<var>` symbols): agents, tools, rules, task, conflict, outcomes and the contrasts measured, each in one line. The user asked for basic math to ground the design.
+- Safety threat models state the adversary's pressure explicitly (e.g. goal mode: the task plus a neutral "continue" message) and what the adversary knows about the obstacle (black box or not), following the threat model of the closest prior paper and naming the one thing changed.
 - Plain language even in the summary: no unexplained terms like "matched control", "workaround rate" or "frontier models". Say what is compared and what counts as the behavior, with a concrete example.
 
 ### Gotchas
@@ -232,4 +235,5 @@ Record preferences, not one-off content. If a later session contradicts an entry
 - Don't lay out label/value rows with CSS grid: it turns every inline tag (`<i>`, `<a>`) into its own column. Review items use a hanging label; the summary puts each label on its own line.
 - A `serve.py` started as a Claude Code background task is killed at its time limit (2 hours at most). Start it detached instead, so it lasts the whole session: `nohup python3 <skill>/scripts/serve.py <dir> --port 8766 > /tmp/proposal-server.log 2>&1 &`, then check the log for the URL. Stop it with `pkill -f "serve.py .*<dir-name>"`.
 - `serve.py` falls back to the next free port; another app held 8765 on this machine, so always report the printed URL.
+- `<summary>` does not toggle inside contenteditable; editor.js toggles it on click and strips `open` on save, and export.py turns each `<details>` into a div with a bold lead-in. SVG has no `_` subscripts: write `R<tspan dy="4" font-size="10">G</tspan><tspan dy="-4">…</tspan>`.
 - Figures are drawn 800 wide and bleed 48px into each page margin; keep SVG text at 12.5px+ so labels stay readable.

@@ -154,6 +154,13 @@ def clean_doc(soup, keep_notes):
                 el["class"] = [c for c in el.get("class", []) if c != "hint"]
             else:
                 el.decompose()
+    # collapsed <details class="more"> blocks export expanded, as a bold lead-in + content
+    for d in doc.select("details"):
+        sm = d.find("summary", recursive=False)
+        if sm is not None:
+            p = doc_soup_new_tag(d, "p"); b = doc_soup_new_tag(d, "b")
+            b.string = sm.get_text(" ", strip=True); p.append(b); sm.replace_with(p)
+        d.name = "div"; d.attrs = {"class": ["more"]}
     for el in doc.select("[contenteditable]"):
         del el["contenteditable"]
     # drop TL;DR lines / callouts whose only text left is their bold label

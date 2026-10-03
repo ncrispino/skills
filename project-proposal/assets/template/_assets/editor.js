@@ -336,6 +336,7 @@
     marks.forEach((m) => m.remove());
     c.querySelectorAll("#doc a[title], a[title]").forEach((x) => { if (/Cmd-click|Click to open/.test(x.title)) x.removeAttribute("title"); });
     c.querySelectorAll(".hint-open").forEach((x) => { x.classList.remove("hint-open"); });
+    c.querySelectorAll("details[open]").forEach((x) => x.removeAttribute("open")); // saved collapsed
     c.querySelectorAll(".group-hidden, .fading, .has-comment, .is-done").forEach((x) => { x.classList.remove("group-hidden", "fading", "has-comment", "is-done"); });
     c.querySelectorAll("[class=\"\"]").forEach((x) => x.removeAttribute("class"));
     c.querySelectorAll("[data-approve-summary]").forEach((x) => x.removeAttribute("contenteditable"));
@@ -402,6 +403,9 @@
     location.href = a.href;
   }
   doc.addEventListener("click", (e) => {
+    // <details class="more">: contenteditable stops <summary> toggling, so toggle it ourselves
+    const sm = e.target.closest && e.target.closest("details > summary");
+    if (sm && doc.contains(sm) && !e.target.closest("a[href]")) { e.preventDefault(); sm.parentElement.open = !sm.parentElement.open; return; }
     const a = e.target.closest && e.target.closest("a[href]"); if (!a || !doc.contains(a)) return;
     const normal = vimOn && mode !== "insert";
     if (normal || e.metaKey || e.ctrlKey) { e.preventDefault(); follow(a, (e.metaKey || e.ctrlKey) && !a.getAttribute("href").startsWith("#")); }

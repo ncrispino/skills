@@ -300,3 +300,19 @@ body.hide-approved .approve-item.is-done { display: none; }
 #doc .example > p:first-child { color: var(--muted); font: 15px/1.5 var(--sans); }
 #doc .example figure { margin-left: 0; margin-right: 0; }
 #doc .example figure figcaption { padding: 0; }
+
+/* progressive disclosure: <details class="more"><summary>One line</summary>…</details>
+   collapsed by default; export opens them all */
+#doc details.more { border-left: 3px solid var(--faint); padding: 0 0 0 16px; margin: 14px 0 20px; }
+#doc details.more > summary { cursor: pointer; font: 500 15.5px/1.5 var(--sans); color: var(--accent); list-style: none; padding: 2px 0; }
+#doc details.more > summary::-webkit-details-marker { display: none; }
+#doc details.more > summary::before { content: "▸"; display: inline-block; width: 1.1em; transition: transform .15s; }
+#doc details.more[open] > summary::before { transform: rotate(90deg); }
+#doc details.more[open] { border-left-color: var(--accent); }
+#doc details.more > summary .sum-note { color: var(--muted); font-weight: 400; }
+/* plain math: definitions in a sans block, symbols in italic serif */
+#doc .math { font: 17px/1.75 var(--serif); background: var(--wash); border-radius: 6px; padding: 12px 20px; margin: 16px 0; }
+#doc .math p { margin: 4px 0; }
+#doc .math var, #doc var { font-style: italic; font-family: var(--serif); }
+#doc .math .def { color: var(--muted); font: 14.5px/1.5 var(--sans); }
+@media print { #doc details.more > summary::before { content: ""; } }
