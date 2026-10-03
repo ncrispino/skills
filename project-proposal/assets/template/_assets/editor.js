@@ -28,6 +28,7 @@
     <button id="pp-hints" aria-pressed="false" title="Show the template guidance for every section">Guide</button>
     <button id="pp-note" title="Insert a note for Claude after the current block (vim: gc)">Add note</button>
     <button id="pp-cmt-btn" title="Comment on the selected text (Cmd/Ctrl-Alt-M, :comment)">Comment</button>
+    <button id="pp-chg-btn" title="Jump to the next change Claude made (shift-click: mark all read)" hidden>Changes</button>
     <button id="pp-ask" title="Save, then tell Claude to address this page's comments and notes (:ask). Shift-click to add a message.">Ask Claude</button>
     <span class="pp-menu" id="pp-export">
       <button title="Export; figures become images in Word and Markdown">Export</button>
@@ -594,6 +595,45 @@
     marksOf(cid).forEach((m) => m.replaceWith(...m.childNodes));
     doc.normalize(); renderComments(); markDirty();
   }
+  // ---------- change marks: what Claude changed, until you mark it read ----------
+  // <ins class="chg" data-chg="id" data-note="what changed (and which comment it answers)">…</ins>
+  const chgsOf = (chg) => [...doc.querySelectorAll(`ins.chg[data-chg="${chg}"]`)];
+  function markRead(chg) {
+    chgsOf(chg).forEach((m) => m.replaceWith(...m.childNodes)); doc.normalize(); renderComments(); markDirty();
+  }
+  function placeChgCard(chg, first, top, floor) {
+    let card = cmtLayer.querySelector(`.pp-chg[data-chg="${chg}"]`);
+    if (!card) {
+      card = el("div", { className: "pp-cmt pp-chg" }, `<div class="pp-cmt-h"><span>Changed</span><button type="button" class="pp-cmt-x" title="Remove the highlight">Mark read</button></div><div class="pp-cmt-pre"></div><div class="pp-chg-note"></div>`);
+      card.dataset.chg = chg;
+      card.querySelector(".pp-cmt-x").onclick = (e) => { e.stopPropagation(); markRead(chg); };
+      card.addEventListener("click", () => { card.classList.toggle("open"); renderComments(); });
+      card.addEventListener("mouseenter", () => chgsOf(chg).forEach((m) => m.classList.add("cmt-on")));
+      card.addEventListener("mouseleave", () => chgsOf(chg).forEach((m) => m.classList.remove("cmt-on")));
+      cmtLayer.append(card);
+    }
+    const note = (first.dataset.note || "").trim() || "Changed by Claude";
+    card.querySelector(".pp-cmt-pre").textContent = note;
+    card.querySelector(".pp-chg-note").textContent = note;
+    const y = Math.max(top - 6, floor);
+    card.style.top = y + "px";
+    return y + card.offsetHeight + 8;
+  }
+  doc.addEventListener("click", (e) => { const m = e.target.closest && e.target.closest("ins.chg"); if (!m) return; const c = cmtLayer.querySelector(`.pp-chg[data-chg="${m.dataset.chg}"]`); if (c && !c.classList.contains("open")) { c.classList.add("open"); renderComments(); } });
+  let chgAt = -1;
+  function nextChange() {
+    const ids = [...new Set([...doc.querySelectorAll("ins.chg[data-chg]")].map((m) => m.dataset.chg))]; if (!ids.length) return;
+    chgAt = (chgAt + 1) % ids.length;
+    const m = chgsOf(ids[chgAt])[0]; const d = m.closest("details"); if (d) d.open = true;
+    m.scrollIntoView({ block: "center" });
+    cmtLayer.querySelectorAll(".pp-chg.open").forEach((c) => c.classList.remove("open"));
+    const c = cmtLayer.querySelector(`.pp-chg[data-chg="${ids[chgAt]}"]`); if (c) c.classList.add("open");
+    renderComments();
+  }
+  q("#pp-chg-btn").onclick = (e) => {
+    if (e.shiftKey) { if (confirm("Mark every change as read?")) { [...new Set([...doc.querySelectorAll("ins.chg[data-chg]")].map((m) => m.dataset.chg))].forEach(markRead); } return; }
+    nextChange();
+  };
   function openCard(cid) {
     const card = cmtLayer.querySelector(`.pp-cmt[data-cid="${cid}"]`); if (!card) return;
     card.classList.add("open"); renderComments(); card.querySelector("textarea").focus();
@@ -602,8 +642,10 @@
     if (!cmtLayer) return;
     placePins();
     const ids = [...new Set([...doc.querySelectorAll(".cmt[data-cid]")].map((m) => m.dataset.cid))];
+    const chgIds = [...new Set([...doc.querySelectorAll("ins.chg[data-chg]")].map((m) => m.dataset.chg))];
     const focused = document.activeElement && document.activeElement.closest && document.activeElement.closest(".pp-cmt");
-    [...cmtLayer.children].forEach((c) => { if (!ids.includes(c.dataset.cid)) c.remove(); });
+    [...cmtLayer.children].forEach((c) => { if (c.dataset.chg ? !chgIds.includes(c.dataset.chg) : !ids.includes(c.dataset.cid)) c.remove(); });
+    const cb = q("#pp-chg-btn"); if (cb) { cb.hidden = !chgIds.length; cb.textContent = `Changes (${chgIds.length})`; }
     const pr = doc.parentElement.getBoundingClientRect(), dr = doc.getBoundingClientRect();
     const room = innerWidth - dr.right - 24;
     // wide window: cards sit on the desk right of the page; narrow: they hug the window edge, over the page margin
@@ -616,9 +658,17 @@
       const vis = ms.find((m) => m.offsetParent); // inside a closed <details>: anchor on its summary
       const anchor = vis || (first.closest("details") && first.closest("details").querySelector("summary")) || first;
       return { cid, first, top: anchor.getBoundingClientRect().top - pr.top };
-    }).sort((a, b) => a.top - b.top);
+    });
+    chgIds.forEach((chg) => {
+      const ms = chgsOf(chg), first = ms.find((m) => m.dataset.note !== undefined) || ms[0];
+      const vis = ms.find((m) => m.offsetParent);
+      const anchor = vis || (first.closest("details") && first.closest("details").querySelector("summary")) || first;
+      items.push({ chg, first, top: anchor.getBoundingClientRect().top - pr.top });
+    });
+    items.sort((a, b) => a.top - b.top);
     let floor = 0;
-    items.forEach(({ cid, first, top }) => {
+    items.forEach(({ cid, chg, first, top }) => {
+      if (chg) { floor = placeChgCard(chg, first, top, floor); return; }
       let card = cmtLayer.querySelector(`.pp-cmt[data-cid="${cid}"]`);
       if (!card) {
         card = el("div", { className: "pp-cmt" }, `<div class="pp-cmt-h"><span>${first.classList.contains("cmt-pin") ? "Figure comment" : "Comment"}</span><button type="button" class="pp-cmt-x" title="Resolve: remove the highlight and the comment">Resolve</button></div><div class="pp-cmt-pre"></div><textarea rows="2" placeholder="Comment for Claude…"></textarea><div class="pp-cmt-reply"></div>`);
