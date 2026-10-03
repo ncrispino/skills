@@ -508,7 +508,8 @@
   function pinComment(fig, e) {
     const svg = fig.querySelector("svg"); const b = svg.getBoundingClientRect();
     const t = e.target.closest("text") || e.target;
-    let target = (t.textContent || "").trim() || t.getAttribute("data-tip") || "";
+    // a direct hit on a label or a shape with a tooltip; otherwise (background, group) the nearest label
+    let target = t.tagName === "text" ? t.textContent.trim() : (t.getAttribute("data-tip") || "");
     if (!target) { const near = [...svg.querySelectorAll("text")].map((x) => { const r = x.getBoundingClientRect(); return [Math.hypot(r.left + r.width / 2 - e.clientX, r.top + r.height / 2 - e.clientY), x.textContent.trim()]; }).sort((a, c) => a[0] - c[0])[0]; if (near) target = "near: " + near[1]; }
     if (vimOn) snapshot();
     const cid = "c" + Date.now().toString(36);
