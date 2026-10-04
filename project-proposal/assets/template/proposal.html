@@ -171,6 +171,34 @@
 <tr><td>E3</td><td>Does the minimal idea beat it? (R2 vs R1)</td><td></td><td></td><td></td></tr>
 </tbody>
 </table>
+<h3>What we vary</h3>
+<p>Default setup: … . Main results vary only the factors that carry the claims; everything else is an ablation, one change at a time from the default.</p>
+<table>
+<thead><tr><th>Factor</th><th>Levels</th><th>Where</th><th>What it tests, and what we expect</th></tr></thead>
+<tbody>
+<tr><td>Method</td><td>R1 baseline; R2 minimal idea</td><td>Main</td><td>Whether R2 beats R1 on the headline metric</td></tr>
+<tr><td>…</td><td>…</td><td>Ablation</td><td>…</td></tr>
+</tbody>
+</table>
+<h3>Paper tables, to fill in</h3>
+<p><b>Table 1. Main results.</b> What is reported, over how many runs, against which comparison.</p>
+<table>
+<thead><tr><th>Method</th><th>Metric A</th><th>Metric B</th></tr></thead>
+<tbody><tr><td>R1</td><td>–</td><td>–</td></tr><tr><td>R2</td><td>–</td><td>–</td></tr></tbody>
+</table>
+<details class="more"><summary>LaTeX</summary><pre><code>\begin{table}[t]
+\centering
+\caption{Main results.}
+\label{tab:main}
+\begin{tabular}{lrr}
+\toprule
+  Method &amp; Metric A &amp; Metric B \\
+\midrule
+  R1 &amp; -- &amp; -- \\
+  R2 &amp; -- &amp; -- \\
+\bottomrule
+\end{tabular}
+\end{table}</code></pre></details>
 <h3>Budget and feasibility</h3>
 <table class="budget" data-budget="1000" data-unit="$">
 <thead><tr><th>Experiment</th><th class="num">Conditions</th><th class="num">Seeds</th><th class="num">Items</th><th class="num">Cost per item</th><th class="num">Total</th></tr></thead>

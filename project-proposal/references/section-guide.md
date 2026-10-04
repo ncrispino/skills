@@ -61,6 +61,9 @@ Test: someone reading only these five paragraphs could decide whether to fund we
 - Seeds / repeats chosen so the expected effect exceeds run-to-run noise; say how noise is estimated.
 - Budget table covers every row above, including ablations and reruns. Verdict green/amber/red.
 - If red: cut conditions, seeds, items, or rungs, in that order of preference, and record the cut in the decision log.
+- "What we vary": the default setup in one sentence, then a table of factors (levels, main result or ablation, what it tests, expected result). Variables that carry a claim go in the main results; the rest are ablations, one change at a time from the default.
+- Paper tables, to fill in: the tables the paper will report (main results, dose or curve, ablations, breakdown of the headline measure), each rendered with dashes and its booktabs LaTeX in a collapsed `<details>`. Each experiment row above should fill at least one cell.
+- Free choices that could be tuned until an effect appears (prompt wording, thresholds): say how they are fixed in advance and reported in full.
 
 ## 7. Expected results
 - Mock figure labeled HYPOTHETICAL showing the expected ordering and the gap that counts as success.
