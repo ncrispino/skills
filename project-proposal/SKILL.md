@@ -176,7 +176,7 @@ Vim is on by default (toggle in the toolbar or `:vim off`). Mode shows top-left;
 - Motions: `h j k l`, `w b e`, `0 ^ $`, `gg G`, `{ }`, counts (`3j`), `Ctrl-d/u`, `zz`.
 - Edit: `i a I A o O`, `x X`, `r<c>`, `s S`, `J`, `D C`, `dd cc yy` (on the current block: paragraph, list item, heading), `d/c/y` + motion (`dw`, `c$`, `dgg`), `p P`, `u`, `Ctrl-r`, `>> <<` (list indent). Undo is vim-style: one insert session is one undo step.
 - Visual: `v` (charwise), `V` (block), then `d x y c`.
-- Search: `/text`, `n N`. Ex: `:w`, `:e!` (reload from disk), `:export docx`, `:note`, `:guide`, `:3` (jump to section 3), `:set dark|light`, `:vim off`.
+- Search: `/text`, `n N`. Ex: `:w`, `:e!` (reload from disk), `:export docx`, `:note`, `:guide`, `:3` (jump to section 3), `:set dark|light|system`, `:vim off`.
 - The status line at the bottom shows mode, file, save state and word count.
 - The sidebar button at the top left (or `:toc`) collapses the outline so the page centers; the choice is remembered per browser.
 - Review pages hide approved items by default ("Show approved (n)" in the toolbar brings them back; remembered per browser). Approved items with a comment stay visible, labelled "Approved, with comment": treat that comment as a requested change when applying the item. An item fades out a moment after it is approved, and a group heading disappears once everything in it is approved.

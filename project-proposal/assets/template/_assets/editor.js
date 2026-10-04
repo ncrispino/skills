@@ -41,7 +41,7 @@
       </span>
     </span>
     <button id="pp-vim" title="Toggle vim keybindings"></button>
-    <button id="pp-theme" title="Switch light and dark">Dark</button>`);
+    <button id="pp-theme" title="Appearance">Theme</button>`);
   document.body.prepend(bar);
   const banner = el("div", { id: "pp-banner" });
   bar.after(banner);
@@ -106,15 +106,16 @@
   // theme
   const setTheme = (t) => { if (t) document.documentElement.dataset.theme = t; else delete document.documentElement.dataset.theme; LS("pp-theme", t || ""); };
   setTheme(LS("pp-theme") || "");
+  // three modes: System (follow the OS appearance), Light, Dark; the button shows the current one and cycles
+  const THEMES = ["", "light", "dark"], NAMES = { "": "System", light: "Light", dark: "Dark" };
   q("#pp-theme").onclick = () => {
-    const dark = document.documentElement.dataset.theme === "dark" ||
-      (!document.documentElement.dataset.theme && matchMedia("(prefers-color-scheme: dark)").matches);
-    setTheme(dark ? "light" : "dark"); themeLabel();
+    const cur = document.documentElement.dataset.theme || "";
+    setTheme(THEMES[(THEMES.indexOf(cur) + 1) % THEMES.length]); themeLabel();
   };
   function themeLabel() {
-    const dark = document.documentElement.dataset.theme === "dark" ||
-      (!document.documentElement.dataset.theme && matchMedia("(prefers-color-scheme: dark)").matches);
-    q("#pp-theme").textContent = dark ? "Light" : "Dark";
+    const cur = document.documentElement.dataset.theme || "";
+    const b = q("#pp-theme"); b.textContent = "Theme: " + NAMES[cur];
+    b.title = "Appearance: System follows your OS setting. Click to switch (System, Light, Dark)";
   }
   themeLabel();
 
@@ -899,7 +900,7 @@
     if (name === "toc") return tocBtn.click();
     if (name === "noh") return sel().collapseToStart();
     if (name === "vim") return setVim(arg !== "off");
-    if (name === "set" && /^(dark|light)$/.test(arg)) return setTheme(arg);
+    if (name === "set" && /^(dark|light|system)$/.test(arg)) { setTheme(arg === "system" ? "" : arg); return themeLabel(); }
     if (/^\d+$/.test(name)) { const hs = doc.querySelectorAll("h2"); const h = hs[+name - 1]; if (h) { h.scrollIntoView(); caretIn(h); } return; }
     status("unknown command: " + c, "error");
   }
