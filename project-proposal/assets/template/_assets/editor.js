@@ -184,18 +184,17 @@
     const base = home ? "" : "research/"; // research pages live in research/
     const here = location.pathname.split("/").pop();
     const get = async (f) => { try { const r = await fetch(base + f + "?t=" + Date.now()); return r.ok ? new DOMParser().parseFromString(await r.text(), "text/html") : null; } catch (e) { return null; } };
-    const [idx, rev, plan] = await Promise.all([get("index.html"), get("review.html"), get("plan-review.html")]);
+    // review pages, each listed with its count of undecided items when it exists
+    const REVIEWS = [["review.html", "Findings to review"], ["plan-review.html", "Plan review"], ["task-review.html", "Tasks to review"]];
+    const [idx, ...revs] = await Promise.all([get("index.html"), ...REVIEWS.map(([f]) => get(f))]);
     const link = (href, label, extra = "", cur = false) => `<a href="${href}"${cur ? ' class="current"' : ""}>${esc(label)}${extra}</a>`;
     let html = `<div class="nav-h">${home ? "Project" : "Research"}</div>`;
     if (home) html += link(home, "Proposal");
-    if (rev) {
-      const open = rev.querySelectorAll('.approve-item[data-status="pending"], .approve-item[data-status="discuss"]').length;
-      html += link(base + "review.html", "Findings to review", open ? `<span class="count">${open}</span>` : "", here === "review.html");
-    }
-    if (plan) {
-      const open = plan.querySelectorAll('.approve-item[data-status="pending"], .approve-item[data-status="discuss"]').length;
-      html += link(base + "plan-review.html", "Plan review", open ? `<span class="count">${open}</span>` : "", here === "plan-review.html");
-    }
+    REVIEWS.forEach(([f, label], i) => {
+      const doc = revs[i]; if (!doc) return;
+      const open = doc.querySelectorAll('.approve-item[data-status="pending"], .approve-item[data-status="discuss"]').length;
+      html += link(base + f, label, open ? `<span class="count">${open}</span>` : "", here === f);
+    });
     if (idx) {
       html += link(base + "index.html", "All research notes", "", !!home && here === "index.html");
       idx.querySelectorAll(".research-list li").forEach((li) => {
