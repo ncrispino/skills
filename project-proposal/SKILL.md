@@ -11,6 +11,7 @@ This skill is shared with the user and is meant to improve over time. Read **Lea
 
 ## Core beliefs (why the template looks the way it does)
 
+- **Work backwards from the perfect-world answer.** Before deciding what to build, record or measure, write down the answer we would want at the end if anything were possible: the table, report or figure a reader would look at, filled in on one concrete example, with what exists today and what is feasible set aside on purpose. Then work backwards: every experiment, metric and recorded field traces to a part of that answer, and any part we cannot reach is named as a limitation, never dropped silently. The answer sets the target; the start-simple ladder sets the path to it (R0 asks how much of the answer a trivial baseline already gives). Without it, projects record far more than they use and cannot say what any of it is for.
 - **Start simple (the bitter lesson).** The user has lost projects by starting with an exciting big idea and later losing to a simple baseline that week 1 should have found. Every proposal has a *start-simple ladder*: R0 trivial baseline → R1 strongest simple baseline → R2 minimal version of the idea → R3 full idea. Each rung is gated by a measured result on the rung below. Build on existing work freely; everything we add must be justified by what actually works.
 - **Feasibility is found in the experiment table.** Writing out every experiment, condition, seed and ablation, with cost, often shows a project is infeasible or too wide. The budget table is live (totals update as numbers change) so scoping happens in the doc, before any compute is spent.
 - **Infrastructure is step 1.** Good infra (one runner, cached calls, append-only raw logs with provenance, recomputable metrics) makes every later experiment cheaper and debuggable. The plan's first milestone is infra + baselines.
@@ -65,10 +66,11 @@ Ask the user where proposals should live if it's not obvious (a `proposals/` fol
 Get these in conversation. Use AskUserQuestion for real forks; don't interview for things you can propose a default for.
 
 1. The idea in the user's words, and the concrete example that made them want to do it.
-2. The five summary paragraphs: the problem, hypothesis, first experiment, we succeed if (metric vs named comparison), we stop if. Draft them yourself and have the user correct them. Until these five are agreed, don't fill sections.
-3. Constraints: budget ($ or GPU-hours), deadline, people, compute access, models/APIs allowed.
-4. Is it a safety/security project (threat model needed)?
-5. What research, if any, they want done, and on which questions.
+2. The perfect-world answer: what they would want to know or see at the end if cost, existing code and feasibility were no object. Sketch it on their example (the final table or report, filled in with made-up values marked HYPOTHETICAL) and have them correct it. Ask them explicitly to set feasibility aside; it comes later, in the experiment table. A short narrated video of the answer (reelplanning, when installed) works well here.
+3. The five summary paragraphs: the problem, hypothesis, first experiment, we succeed if (metric vs named comparison), we stop if. Draft them yourself, reading the hypothesis and "we succeed if" off the perfect-world answer, and have the user correct them. Until these five are agreed, don't fill sections.
+4. Constraints: budget ($ or GPU-hours), deadline, people, compute access, models/APIs allowed.
+5. Is it a safety/security project (threat model needed)?
+6. What research, if any, they want done, and on which questions.
 
 ### 2. Scaffold and serve
 
@@ -85,7 +87,7 @@ Go in order, one or two sections per turn, and let the user react.
 
 **Template rule: everything default is `class="hint"` and hidden.** Each section's guidance text, example tables, example figures and placeholder rows sit in one `<div class="hint">` after its heading. They are invisible in the doc (the user sees only headings until a section is written), revealed per section by hovering the heading and clicking "Guide", or all at once with the toolbar's Guide button or `:guide`. Export drops them. When you write a section, move what you need out of its hint block (drop the `hint` class) and delete the rest. Never leave template text or example numbers visible. Per-section checklists are in `references/section-guide.md`; read it when drafting a section for the first time in a session.
 
-Order that works best: summary → Figure 1 sketch → Challenges (incl. "could a simple baseline already solve this?") → Approach ladder → Experiments + budget → Infrastructure → Expected results → Motivation polish → Plan → Risks. Experiments come early because they are where feasibility shows up; if the budget goes red, stop and rescope with the user before polishing prose.
+Order that works best: the answer we want → summary → Figure 1 sketch → Challenges (incl. "could a simple baseline already solve this?") → Approach ladder → Experiments + budget → Infrastructure → Expected results → Motivation polish → Plan → Risks. Experiments come early because they are where feasibility shows up; if the budget goes red, stop and rescope with the user before polishing prose.
 
 ### 4. Co-editing protocol (important)
 
@@ -228,6 +230,7 @@ Record preferences, not one-off content. If a later session contradicts an entry
 - For a benchmark, define a task formally: a tuple split into what the agents are given and what only the scorer sees, plus each score as a formula with its plain meaning beside it (3 Oct 2026).
 - Plain language even in the summary: no unexplained terms like "matched control", "workaround rate" or "frontier models". Say what is compared and what counts as the behavior, with a concrete example.
 - Write the paper's tables into the Experiments section as templates to fill in: each table as a rendered HTML table with dashes in empty cells, a bold "Table N." caption saying what is reported and against what, and its LaTeX source (booktabs) in a `<details class="more"><summary>LaTeX</summary><pre><code>…</code></pre></details>`. At least the main results, any dose or curve, the ablations (one change at a time from a stated default) and a breakdown of the headline measure. The user wants it "like we are filling in a paper", to make clear what each experiment must show (4 Oct 2026).
+- Work backwards from a perfect-world answer: before what to record or build, state the output we would want if anything were possible, on one example, with no code or feasibility in it; then trace everything back to it and list what it cannot reach as limitations. The user asked for this after a project had accumulated records nobody could say the use of (7 Oct 2026).
 - Keep one "What we vary" table (factor, levels, where reported: main or ablation, what it tests and the expected result), with the default setup stated once above it. Say how wording or other free choices are kept from becoming knobs: fixed in git before running, all reported, chosen on one task and tested unchanged on another, identical across matched versions (4 Oct 2026).
 
 ### Gotchas

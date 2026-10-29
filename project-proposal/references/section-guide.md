@@ -20,9 +20,10 @@ Test: someone reading only these five paragraphs could decide whether to fund we
 - Opens with a concrete example of the problem (input, what goes wrong), not a general claim.
 - Says who would use the result and what they would do differently.
 - ≤ 2 short paragraphs. Related work only if it explains why now.
+- Ends with **The answer we want**: the perfect-world output on the running example (a mock table, report or figure, values marked HYPOTHETICAL), written as if anything were possible, with no current code or feasibility in it. Under it, a short list of what even the perfect version cannot see. Every later section traces back to this: an experiment, metric or recorded field that serves no part of it is cut, and a part no experiment reaches is a named limitation.
 
 ## 2. Challenges
-- Each challenge: why it's hard → what it implies for the design or which experiment addresses it.
+- Each challenge: why it's hard → what it implies for the design or which experiment addresses it. Most challenges are a gap between the answer we want and what we can actually get; say which part of the answer each one threatens.
 - Challenges that map to nothing below are either missing experiments or not real challenges.
 - "Could a simple baseline already solve this?" callout names the strongest cheap alternative. If we can't say why it falls short, testing it is E1/E2.
 
