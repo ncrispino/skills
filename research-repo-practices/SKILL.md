@@ -46,9 +46,9 @@ Open only the file the task needs.
 | File | Open it when |
 |---|---|
 | [references/working-with-the-owner.md](references/working-with-the-owner.md) | planning, asking a decision, reporting status or a handoff, committing or pushing, spending money, or briefing a subagent |
-| [references/docs-and-readmes.md](references/docs-and-readmes.md) | writing or reviewing a README, docs index, code map, design doc, limitations page or command block; writing instructions an agent will read; importing an outside task |
+| [references/docs-and-readmes.md](references/docs-and-readmes.md) | writing or reviewing a README, docs index, code map, design doc, limitations page or command block; writing a brief an agent will read; adapting an outside specification |
 | [references/visuals.md](references/visuals.md) | drawing a diagram, figure, chart, explainer video or design prototype |
-| [references/code-structure.md](references/code-structure.md) | adding a harness, provider, task, check or config; deciding what a user writes (fields, settings files, examples, defaults); refactoring; choosing file layout; splitting out a package; proving a change moved nothing else |
+| [references/code-structure.md](references/code-structure.md) | adding a harness, provider, task, check or config; deciding what a user writes (fields, settings files, examples, defaults); refactoring; choosing file layout; proving a change moved nothing else |
 | [references/viewer-and-ui.md](references/viewer-and-ui.md) | building, changing or checking a viewer, dashboard or report page |
 | [references/research-integrity.md](references/research-integrity.md) | designing measurement, graders, readers or golds; wording a finding, a count or an absence |
 
@@ -76,13 +76,13 @@ On approval, put each one in the reference file for its topic, written as rule, 
 
 ### Learned preferences
 
-Added from a second repo, a package for agent-driven optimization experiments. Each line points to the full rule.
+Added from a second repo. Each line points to the full rule.
 
 - Define a core concept by the fewest parts that do not overlap, and derive the rest. See rule 34 in [references/code-structure.md](references/code-structure.md).
-- Keep the problem in code and everything about a run in one settings file. See rule 35 there.
+- Keep what the experiment is in code and how a run is carried out in one settings file. See rule 35 there.
 - One entry point for every example, each example directory complete, and common cases shipped as things to build on. See rules 36 and 37 there.
 - Protective steps are on by default and turned off explicitly. See rule 39 there.
 - Generate facts instead of restating them, and render authored text through one fixed layout. See rule 40 there.
-- Write an agent's task as an Objective and Constraints (Rules and Environment). See rule 30 in [references/docs-and-readmes.md](references/docs-and-readmes.md).
+- Write a brief for an agent as an objective and constraints. See rule 30 in [references/docs-and-readmes.md](references/docs-and-readmes.md).
 - Cut defensive filler and say each caveat once. See rule 31 there.
 - Make three passes on a figure: content, fit, wording. See rule 20 in [references/visuals.md](references/visuals.md).

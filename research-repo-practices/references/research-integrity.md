@@ -130,6 +130,6 @@ How to measure, grade and word results so they hold up. A **subject** is what th
     *Why:* an unpinned provider made results impossible to replicate.
     *Example:* see rule 13 in [code-structure.md](code-structure.md).
 
-30. **In every report, say what kind of evidence each check is and what was never run.** Name the kinds, such as tests with stand-ins, reference controls and live models, and state plainly when nothing was run with the real environment.
+30. **In every report, say what kind of evidence each check is and what was never run.** Name the kinds, such as tests with stand-ins, reference controls and live runs, and state plainly when nothing ran in the real environment.
     *Why:* a green test suite reads as "it works", and a plumbing check must not be mistaken for a result.
-    *Example:* in a second repo, a container runtime was not available. Every summary and the pull request said that the loop was tested with a stand-in agent only and that no command had been run with containers or a live model.
+    *Example:* in a second repo, the real runtime was not available during a large change. Every summary said that the main loop was tested with a stand-in only and that nothing had been run live.

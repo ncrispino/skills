@@ -146,42 +146,38 @@ Two words used below. A **seam** is a place where behaviour varies by implementa
     *Why:* small steps are easy to review and to undo.
     *Example:* in the repo this came from, each design doc ends with a build-order table, one row per commit.
 
-## Defining what a user writes
+## What a user has to write
 
-The examples below come from a second repo: a package that runs optimization experiments in which an agent proposes changes and code measures them.
+These rules cover the surface a user fills in: the definition of a unit of work, its settings, and the examples they copy. The examples come from a second repo, a package for running experiments.
 
 34. **Define a core concept by the fewest parts that do not overlap, and derive everything else.** Treat the parts like a basis: each is needed, and none can be worked out from the others.
     *Why:* overlapping fields let two of them disagree, and every extra field is another term the reader must learn.
-    *Example:* a task had eleven fields, including `rules`, `prompt`, `metrics` and `review_facts`. The owner asked for "succinct number that are fully independent in the sense it's like a basis". It became four parts (`objective`, `evaluator`, `seed`, `instructions`) and three optional ones. A separate table of agent start limits was dropped because it follows from the candidate limit.
+    *Example:* in a second repo, the central definition had eleven fields, several of which restated each other. The owner asked for "succinct number that are fully independent in the sense it's like a basis". It became four required parts and three optional ones, and a table of limits that followed from another limit was deleted.
 
-35. **Keep the problem in code and everything about a run in one settings file.** No budget, limit or agent choice is hard-coded in a launch script.
-    *Why:* a reader should find "what is being optimized" in one place and "who runs it and for how long" in another, and should be able to change the second without reading Python.
-    *Example:* five example scripts each hard-coded their limits and took different flags. Each task became a `task.py`, and every run a `run.toml` with four tables: limits, researcher, reviewer and task options.
+35. **Keep what the experiment is in code and how a run is carried out in one settings file.** No budget, limit or choice of model is hard-coded in a launch script.
+    *Why:* a reader should find the definition in one place and the run's knobs in another, and should be able to change the knobs without reading code.
+    *Example:* in a second repo, each example script hard-coded its own limits and took its own flags. Limits and model choices moved into one settings file per run with four tables.
 
-36. **Give every example the same entry point, and make each example directory complete.** One launcher runs any of them, and a directory holds its definition, settings and starting files, so copying it is how a new one starts.
+36. **Give every example the same entry point, and make each example directory complete.** One command runs any of them, and copying a directory is how a new one starts.
     *Why:* per-example launch scripts drift apart, and an example that reaches into a sibling directory cannot be copied.
-    *Example:* one example read its test task from `../../environment/task`. It got its own copy, a `starters/` directory of generic scripts was deleted, and `check`, `record` and `run` commands replaced the scripts.
+    *Example:* in a second repo, one example read its data from another example's directory. It got its own copy, a folder of generic starter scripts was deleted, and three commands replaced five scripts.
 
 37. **Ship the common cases as things to build on, so a new instance is a few lines.**
-    *Why:* most new work is a variation on a known kind, and a user who must assemble the low-level pieces each time will assemble them differently each time.
-    *Example:* two base tasks cover "edit a benchmark task's files, solver fixed" and "edit the solver's program, tasks fixed". An example that had been sixty lines became one call naming its task directory.
+    *Why:* most new work is a variation on a known kind, and users who assemble the low-level pieces each time assemble them differently each time.
+    *Example:* in a second repo, two ready-made bases cover the two usual kinds of experiment. An example that had been sixty lines became one call.
 
 38. **Resolve paths against the file that names them, with conventional defaults.** A definition file never works out its own location.
-    *Why:* `HERE = Path(__file__).parent` in every file is noise, and a default layout means most files name no paths.
-    *Example:* the owner asked "do we need HERE". Paths became relative to the task file, with `seed/` and `instructions.md` beside it as defaults, and the smallest task now names neither.
+    *Why:* location boilerplate in every file is noise, and a default layout means most files name no paths at all.
+    *Example:* in a second repo, the owner asked "do we need HERE" about a `Path(__file__).parent` line. Paths became relative to the definition file, with default names for the usual neighbours.
 
 39. **Turn a protective step on by default, and make turning it off explicit.** Refuse a configuration that says nothing about it.
     *Why:* an opt-in check is one that most runs skip without anyone deciding to.
-    *Example:* an independent review of each candidate had to be configured to run. The owner said "we should have to turn off not on". It now runs unless the settings say `reviewer = false`, and settings that mention neither are refused.
+    *Example:* in a second repo, an independent review step had to be configured to run. The owner said "we should have to turn off not on". It now runs unless the settings switch it off by name.
 
-40. **Generate from the definition any fact that prose would otherwise restate, and render user-written text through one fixed layout that rejects unknown sections.**
-    *Why:* a hand-written "lower is better" can contradict the declared direction and nothing notices, and free-form sections let each task invent its own shape.
-    *Example:* instructions have two authored sections, Objective and Constraints. The package adds a "What is measured" list (metric, direction, starting files, repeats) from the task itself, and a stray `## Advice` heading fails before anything runs.
+40. **Generate from the definition any fact that prose would otherwise restate, and render authored text through one fixed layout that rejects unknown sections.**
+    *Why:* a hand-written "lower is better" can contradict the declared direction with nothing to notice, and free-form sections let each author invent a shape.
+    *Example:* in a second repo, the owner asked for "a templated way to deal with aspects of this so it is more consistent". Authors write two sections, the system adds a generated list of what is measured, and a heading outside the layout fails before anything runs.
 
-41. **Never give one word two jobs.** A field must not share its name with a command, and a name should say what the thing returns or varies.
+41. **Never give one word two jobs.** A field must not share its name with a command, and a name should say what the thing returns or what it varies.
     *Why:* a reader who meets the word cannot tell which meaning is meant.
-    *Example:* a task's `check` function collided with the `check` command. It became `validity`, which is also the type it returns. Two evaluator classes that differed only by an unexplained word were renamed for what each one varies.
-
-42. **Split a reusable mechanism into its own repository once it stands alone.** Start it with one commit made from a git export, pin it by commit in the application, and repoint every link that left the package.
-    *Why:* a copy inside the application and a copy outside it drift, and a floating dependency changes results without a commit that says so.
-    *Example:* the package moved out with a fresh first commit. The application's dependency became a git URL at an exact commit, its lockfile followed, and seven links to result reports became URLs.
+    *Example:* in a second repo, a field and a command were both called `check`. The field was renamed after the type it returns.

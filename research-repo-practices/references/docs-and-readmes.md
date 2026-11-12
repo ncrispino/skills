@@ -128,14 +128,14 @@ How READMEs and docs should read and link together. Each rule gives the rule, wh
 
 ## Text an agent will read
 
-30. **Write an agent's task as an optimization problem: an Objective and Constraints.** The Objective says which files to change, which measure should move and how a run is measured. Constraints holds two lists: Rules, which someone must judge, and Environment, which holds whatever the agent does.
-    *Why:* separate Goal, Deliverable, Scoring and Advice sections are each half a sentence that needs the others, and advice mixed with rules gets enforced as a rule.
-    *Example:* in a second repo, the owner asked for rules and environment "under a main constraints idea" and to fold the deliverable and scoring into the objective. A reviewer is now given each rule as its own check, so a verdict names the rule that was broken, and nothing outside Rules is judged.
+30. **Write a brief for an agent as an objective and constraints.** The objective says what to change, which measure should move and how it is measured. The constraints are two lists: rules that someone must judge, and limits the environment enforces whatever the agent does.
+    *Why:* separate goal, deliverable, scoring and advice sections are each half a sentence that needs the others, and advice mixed in with rules gets enforced as a rule.
+    *Example:* in a second repo, the owner asked for rules and environment "under a main constraints idea" and for the deliverable and scoring to be folded into the objective. Each rule is then judged on its own, so a verdict names the rule that was broken.
 
-31. **Cut defensive filler and say each caveat once, where it matters.**
+31. **Cut defensive filler, and say each caveat once, where it matters.**
     *Why:* a sentence that only protects the writer costs the reader time, and a caveat repeated in every section stops being read.
-    *Example:* in a second repo, the owner asked to "remove all slop and mannered prose". Lines such as "this is an ordinary integration, not a mandatory template or additional framework layer" were deleted, and "these counts are not a dollar cap", which appeared in most documents, was kept in one place.
+    *Example:* in a second repo, the owner asked to "remove all slop and mannered prose". Sentences that only said what something was not were deleted, and a caveat that appeared in most documents was kept in one.
 
-32. **When you import someone else's task or specification, show the mapping and mark what you added.** Give a table from each source section to where it went, and list which requirements came from the source and which are yours.
-    *Why:* a reader must be able to tell the source's requirements from the importer's judgment.
-    *Example:* in a second repo, three published benchmark tasks were broken down into the house format. For one of them the source stated no rules at all, so the table says that all four rules in the import were added.
+32. **When you adapt someone else's specification, show the mapping and mark what you added.** Give a table from each source section to where it went, and say which requirements are the source's and which are yours.
+    *Why:* a reader must be able to tell the source's requirements from the adapter's judgment.
+    *Example:* in a second repo, three published benchmark tasks were rewritten in the house format. One source stated no rules, so its table says that every rule in the adapted version was added.
