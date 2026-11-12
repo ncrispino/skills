@@ -125,3 +125,17 @@ How READMEs and docs should read and link together. Each rule gives the rule, wh
 29. **Make rules and taxonomies complete, non-overlapping and justified, without listing more than needed.**
     *Why:* a label list chosen up front with no justification undermines the numbers built on it.
     *Example:* in the repo this came from, the owner asked "how are we sure that the label taxonomy is complete ie like a basis", and also "i dont want to over enumerate things".
+
+## Text an agent will read
+
+30. **Write an agent's task as an optimization problem: an Objective and Constraints.** The Objective says which files to change, which measure should move and how a run is measured. Constraints holds two lists: Rules, which someone must judge, and Environment, which holds whatever the agent does.
+    *Why:* separate Goal, Deliverable, Scoring and Advice sections are each half a sentence that needs the others, and advice mixed with rules gets enforced as a rule.
+    *Example:* in a second repo, the owner asked for rules and environment "under a main constraints idea" and to fold the deliverable and scoring into the objective. A reviewer is now given each rule as its own check, so a verdict names the rule that was broken, and nothing outside Rules is judged.
+
+31. **Cut defensive filler and say each caveat once, where it matters.**
+    *Why:* a sentence that only protects the writer costs the reader time, and a caveat repeated in every section stops being read.
+    *Example:* in a second repo, the owner asked to "remove all slop and mannered prose". Lines such as "this is an ordinary integration, not a mandatory template or additional framework layer" were deleted, and "these counts are not a dollar cap", which appeared in most documents, was kept in one place.
+
+32. **When you import someone else's task or specification, show the mapping and mark what you added.** Give a table from each source section to where it went, and list which requirements came from the source and which are yours.
+    *Why:* a reader must be able to tell the source's requirements from the importer's judgment.
+    *Example:* in a second repo, three published benchmark tasks were broken down into the house format. For one of them the source stated no rules at all, so the table says that all four rules in the import were added.

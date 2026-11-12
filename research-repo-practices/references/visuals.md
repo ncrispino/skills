@@ -83,3 +83,7 @@ How to draw diagrams, figures, charts, explainer videos and design prototypes. F
 19. **Hold the bar high.**
     *Why (owner preference):* the owner judges the result as a finished product.
     *Example:* in the repo this came from, the owner asked for work "like a top tier engineering or deisngn firm would release".
+
+20. **Make three passes on a figure: content, fit, then wording.** First check that it shows the current design. Then render it and fix anything that collides or overflows. Then cut the text until each item is one short line a newcomer would say.
+    *Why:* each pass finds a different kind of fault, and wording is the one most often skipped.
+    *Example:* in a second repo, the owner asked to "focus especially on making the text less complicated". "open the task, print the budget, start nothing" became "look, start nothing", and rows that named optional parts were removed.

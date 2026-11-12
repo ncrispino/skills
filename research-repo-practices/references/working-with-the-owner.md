@@ -128,3 +128,13 @@ These are one owner's preferences. A rule whose why is marked *owner preference*
 28. **End each build phase with an adversarial review by fresh agents.**
     *Why:* the author cannot see their own blind spots.
     *Example:* in the repo this came from, fresh reviewers caught a filter that hid how a grading tool could be exploited. See rule 32 in [viewer-and-ui.md](viewer-and-ui.md) for what cold readers caught on pages.
+
+## Shaping a design together
+
+29. **When the owner is thinking aloud about a design, answer with one recommendation and its reason, then build it on a yes.** Say what it costs, and do not list every alternative.
+    *Why:* the owner wants a position to react to, and a survey hands the decision back unmade.
+    *Example:* in a second repo, the owner asked "what is most graceful way?" about a format with too many sections. The reply proposed two sections, gave one cost, and the change was made on "Sure".
+
+30. **Before fixing a format, look at how real, published examples of the same thing are written.**
+    *Why:* a format designed from one's own examples fits only those examples.
+    *Example:* in a second repo, the owner pointed at three public benchmarks to "ground this and see what information actually being provided". None had an advice section, which changed the format, and their tasks exposed four things the package could not yet do.
